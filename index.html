@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)file:///C:/Users/honmah/Downloads/acid_monster47%20(1).html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#5cc8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- 丸ゴシック（読み込めない環境ではヒラギノ丸ゴ等の端末フォントで表示） -->
+<link rel="preconnect" href="https://fonts.googleapis.com/"><link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+<title>ヒストリモンスター ― Japan History Monster</title>
+<style>
+  /* =========================================================
+     ポップデザイン ＋ レスポンシブ
+     ・タブレット横（最優先）: 上=HUD / 左=ステージ（マップ・バトル）/ 右=ログ＋十字キー
+     ・スマホ縦・タブレット縦: 上=HUD / 中=ステージ / 下=ログ＋十字キー
+     ・ステージ内のバトルは container query でステージ幅に応じて2列⇔1列
+     ========================================================= */
+  :root{
+    --ink:#2a2350; --ink2:#4a4378;
+    --bg:#fff8e7; --bg2:#fff0c8; --panel:#ffffff; --panel2:#f4f1ff; --soft:#e7e2f7;
+    --line:#2a2350; --txt:#2a2350; --txt-dim:#6d6894;
+    --cyan:#0a9fb4; --amber:#ef8700; --violet:#7b5cf0; --rose:#ff4f8b;
+    --lime:#1fae58; --danger:#ff4d5e; --gold:#d99a00; --sun:#ffd23f; --sky:#5cc8ff; --mint:#5ee08a;
+    --glow:0 0 0 3px rgba(123,92,240,.28);
+    --pop:0 5px 0 var(--ink); --pop-sm:0 3px 0 var(--ink);
+    --bw:3px; --r:18px;
+    --ol:1.6px;
+    --outline:drop-shadow(var(--ol) 0 0 var(--ink)) drop-shadow(calc(var(--ol)*-1) 0 0 var(--ink)) drop-shadow(0 var(--ol) 0 var(--ink)) drop-shadow(0 calc(var(--ol)*-1) 0 var(--ink));
+    --font:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+    --fs:clamp(13px,0.55vw + 9px,16px);
+    --side:clamp(232px,27vw,340px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:var(--font);font-size:var(--fs);color:var(--txt);overflow:hidden;
+    background-color:var(--sky);
+    background-image:radial-gradient(rgba(255,255,255,.45) 2px,transparent 2.6px),linear-gradient(160deg,#68d0ff 0%,#a6ebff 50%,#ffd3ea 100%);
+    background-size:28px 28px,100% 100%;
+    -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;touch-action:manipulation;}
+  button{font-family:inherit;color:inherit;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+  b{font-weight:800;}
+
+  /* ---------- 全体レイアウト ---------- */
+  #app{position:fixed;inset:0;margin:auto;max-width:1440px;display:grid;gap:10px;
+    padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+    grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hud" "stage" "side";
+    -webkit-user-select:none;user-select:none;}
+  /* 横画面（タブレット横・PC・大きめのスマホ横） */
+  @media (orientation:landscape) and (min-width:700px){
+    #app{grid-template-columns:minmax(0,1fr) var(--side);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"hud hud" "stage side";}
+  }
+  .card{background:var(--panel);border:var(--bw) solid var(--ink);border-radius:var(--r);box-shadow:var(--pop);}
+
+  /* ---------- HUD ---------- */
+  #hud{grid-area:hud;display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:6px 10px;}
+  .brand{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
+  .brand .logo,.brand .logo svg{width:36px;height:36px;display:block;}
+  .brand .logo svg{filter:var(--outline);}
+  .title{font-size:1.15em;font-weight:800;letter-spacing:.5px;color:var(--rose);text-shadow:2px 2px 0 var(--sun);white-space:nowrap;}
+  .stats{display:flex;gap:6px;align-items:center;font-size:.9em;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;order:2;}
+  .stats::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;background:var(--bg);border:2px solid var(--ink);border-radius:999px;padding:3px 11px;display:flex;gap:5px;align-items:center;font-weight:700;white-space:nowrap;}
+  .chip b{color:var(--cyan);} .chip.gold b{color:var(--gold);}
+  .leadwrap{display:flex;align-items:center;gap:6px;}
+  .leadbar{height:10px;width:84px;background:#eee;border-radius:999px;overflow:hidden;border:2px solid var(--ink);}
+  .leadfill{display:block;height:100%;background:var(--lime);transition:width .25s;}
+  .leadfill.mid,.hpline span.mid{background:var(--sun);} .leadfill.low,.hpline span.low{background:var(--danger);}
+  .hbtns{display:flex;gap:6px;margin-left:auto;order:3;}
+  .iconBtn{font-size:.95em;font-weight:800;cursor:pointer;background:var(--sun);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;min-height:40px;min-width:44px;box-shadow:var(--pop-sm);transition:transform .08s,box-shadow .08s;}
+  .iconBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  @media (orientation:portrait),(max-width:699px){
+    .stats{order:4;flex-basis:100%;}
+  }
+  @media (orientation:landscape) and (min-width:700px){ .stats{flex:1 1 0;} }
+  @media (orientation:portrait) and (min-width:600px){ .dpad{--dk:60px;} #log{max-height:12em;} }
+
+  /* ---------- ステージ ---------- */
+  #stage{grid-area:stage;position:relative;min-height:0;overflow:hidden;container-type:size;container-name:stage;background:#b8ec9a;}
+  #viewport{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:pointer;}
+  #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;transition:transform .15s linear;}
+  #world canvas{display:block;}
+  .snap,.snap *{transition:none!important;}
+  .wsprite{position:absolute;width:34px;height:34px;z-index:2;transition:left .15s linear,top .15s linear;pointer-events:none;}
+  .wsprite svg{display:block;width:34px;height:34px;filter:var(--outline);--ol:1px;}
+  .wsprite.trainer svg{width:34px;height:40px;}
+  .wsprite::before{content:"";position:absolute;left:6px;right:6px;bottom:-9px;height:6px;border-radius:50%;background:rgba(42,35,80,.25);}
+  .wsprite.trainer::before{bottom:-14px;}
+  .wsprite.lblLow .wname{top:auto;bottom:-24px;z-index:3;}
+  .bob svg{animation:bob 1.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  .wname{position:absolute;font-size:9px;font-weight:800;color:var(--ink);background:#fff;border:1.5px solid var(--ink);border-radius:999px;padding:0 6px;white-space:nowrap;transform:translateX(-50%);left:17px;top:-15px;}
+  #minimap{position:absolute;right:10px;top:10px;z-index:6;width:clamp(86px,13cqw,140px);height:auto;border:2px solid var(--ink);border-radius:10px;background:#fff;box-shadow:var(--pop-sm);pointer-events:none;}
+  #areaName{position:absolute;left:10px;top:10px;z-index:6;font-size:.95em;font-weight:800;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;box-shadow:var(--pop-sm);pointer-events:none;}
+
+  /* ---------- 会話 ---------- */
+  #dialogue{display:none;position:absolute;left:12px;right:12px;bottom:12px;z-index:8;background:#fff;border:var(--bw) solid var(--ink);border-radius:var(--r);box-shadow:var(--pop);cursor:pointer;max-width:860px;margin:0 auto;animation:popIn .18s ease-out;}
+  #dialogue.show{display:flex;}
+  .portrait{flex:0 0 clamp(64px,10cqw,96px);border-right:var(--bw) solid var(--ink);background:var(--bg2);display:flex;align-items:flex-end;justify-content:center;overflow:hidden;border-radius:calc(var(--r) - 3px) 0 0 calc(var(--r) - 3px);}
+  .portrait svg{width:100%;height:auto;display:block;}
+  .dlgBody{flex:1;padding:14px 16px 10px;position:relative;min-width:0;}
+  .dlgName{position:absolute;top:-16px;left:14px;color:#fff;background:var(--violet);border:2px solid var(--ink);border-radius:999px;padding:2px 14px;font-size:.92em;font-weight:800;}
+  .dlgText{font-size:1.05em;line-height:1.75;min-height:3.5em;font-weight:500;}
+  .dlgHint{font-size:.78em;color:var(--txt-dim);text-align:right;margin-top:2px;animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:.25}}
+  @keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+
+  /* ---------- 右（下）カラム: ログ＋操作 ---------- */
+  #side{grid-area:side;display:flex;gap:10px;min-height:0;align-items:stretch;}
+  #log{flex:1 1 auto;min-width:0;padding:10px 14px;font-size:.95em;line-height:1.65;color:var(--txt);overflow:auto;max-height:9.5em;}
+  #log .sys{color:var(--violet);font-weight:800;}
+  #log b{color:var(--rose);}
+  #controls{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+  .dpad{display:grid;grid-template-columns:repeat(3,var(--dk));grid-template-rows:repeat(3,var(--dk));gap:4px;--dk:46px;}
+  .dpad button{font-size:1.4em;font-weight:800;background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-radius:14px;cursor:pointer;box-shadow:var(--pop-sm);transition:transform .06s,box-shadow .06s,background .06s;}
+  .dpad button:active,.dpad button.on{transform:translateY(2px);box-shadow:0 1px 0 var(--ink);background:var(--sun);}
+  .dpad .spacer{visibility:hidden;}
+  .dpad .hub{border-radius:50%;background:var(--soft);border:var(--bw) solid var(--ink);margin:8px;}
+  .keyhint{font-size:.72em;color:var(--txt-dim);text-align:center;line-height:1.5;}
+  @media (hover:none){.keyhint{display:none;}}
+  @media (orientation:landscape) and (min-width:700px){
+    #side{flex-direction:column;}
+    #log{max-height:none;flex:1 1 auto;}
+    #controls{padding:12px 6px;}
+    .dpad{--dk:clamp(52px,6.2vw,72px);}
+  }
+  /* バトル中は十字キーを隠す */
+  #app.battling #controls{display:none;}
+  @media (orientation:portrait),(max-width:699px){ #app.battling #log{max-height:5.2em;} }
+
+  /* ---------- バトル ---------- */
+  #battle{display:none;position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
+    background:linear-gradient(#a9e7ff 0%,#d8f6ff 46%,#bdeb94 46%,#a6df7e 100%);}
+  #battle.trainer{background:linear-gradient(#d9c9ff 0%,#f3e9ff 46%,#ffc8de 46%,#ffb3d0 100%);}
+  .battleInner{min-height:100%;display:grid;gap:12px;padding:12px;grid-template-columns:minmax(0,1fr);align-content:start;}
+  @container stage (min-width:640px){
+    .battleInner{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-content:stretch;align-items:center;padding:16px;gap:16px;}
+  }
+  .bfield{display:flex;flex-direction:column;gap:8px;justify-content:space-around;min-height:100%;}
+  .brow{display:flex;align-items:center;gap:10px;}
+  .brow.foe{flex-direction:row-reverse;}
+  .brow.me{flex-direction:row;}
+  .bart{position:relative;width:clamp(84px,24cqw,190px);aspect-ratio:1;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  @container stage (max-height:520px){ .bart{width:clamp(72px,16cqw,130px);} }
+  .bart::before{content:"";position:absolute;left:4%;right:4%;bottom:2%;height:20%;border-radius:50%;background:radial-gradient(rgba(42,35,80,.28),rgba(42,35,80,.06) 70%,transparent 72%);}
+  .bart svg{position:relative;width:96%;height:96%;filter:var(--outline);--ol:2px;}
+  .bart.enter svg{animation:enter .4s cubic-bezier(.3,1.6,.5,1);}
+  @keyframes enter{from{transform:scale(.2) translateY(30%);opacity:0}to{transform:none;opacity:1}}
+  .bart.hit svg{animation:shake .35s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px);filter:var(--outline) brightness(1.8)}60%{transform:translateX(9px)}}
+  .dmgPop{position:absolute;left:50%;top:18%;z-index:3;transform:translateX(-50%);font-size:1.9em;font-weight:800;color:#fff;pointer-events:none;white-space:nowrap;
+    text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),2px 2px var(--ink),-2px -2px var(--ink),2px -2px var(--ink),-2px 2px var(--ink);animation:dmgUp .95s ease-out forwards;}
+  .dmgPop.super{color:var(--sun);font-size:2.3em;} .dmgPop.weak{color:#cfd3ea;} .dmgPop.miss{color:#fff;font-size:1.4em;}
+  @keyframes dmgUp{0%{transform:translate(-50%,10px) scale(.6);opacity:0}20%{transform:translate(-50%,0) scale(1.15);opacity:1}100%{transform:translate(-50%,-40px) scale(1);opacity:0}}
+  .bcard{flex:1;min-width:0;max-width:360px;background:#fff;border:var(--bw) solid var(--ink);border-radius:16px;box-shadow:var(--pop-sm);padding:8px 12px;}
+  .bcard .bname{font-size:1.08em;font-weight:800;display:flex;align-items:center;gap:6px;justify-content:space-between;}
+  .bcard .bname>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .bcard .blv{font-size:.85em;color:var(--txt-dim);font-weight:700;}
+  .tbadge{display:inline-block;font-size:.72em;padding:1px 9px;border-radius:999px;border:2px solid var(--ink);font-weight:800;color:#fff;background:var(--tc,#8a8fa8);text-shadow:0 1px 0 rgba(42,35,80,.45);white-space:nowrap;vertical-align:middle;}
+  .hpline{height:14px;background:#eceaf5;border:2px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:5px;position:relative;}
+  .hpline span{display:block;height:100%;background:var(--lime);transition:width .45s ease-out,background .3s;border-radius:999px;}
+  .hptxt{font-size:.82em;color:var(--txt-dim);margin-top:2px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+  .xpline{height:6px;background:#eceaf5;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:3px;}
+  .xpline span{display:block;height:100%;background:var(--sky);transition:width .35s;}
+  .bmid{display:flex;justify-content:space-between;align-items:center;font-size:.9em;margin:0 4px;}
+  .combo{color:#fff;font-weight:800;background:var(--amber);border:2px solid var(--ink);border-radius:999px;padding:0 10px;}
+  .combo:empty{display:none;}
+  .partyDots{display:flex;gap:5px;background:rgba(255,255,255,.75);border:2px solid var(--ink);border-radius:999px;padding:4px 8px;}
+  .pdot{width:12px;height:12px;border-radius:50%;background:var(--lime);border:2px solid var(--ink);}
+  .pdot.ko{background:#bbb6cf;} .pdot.cur{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--violet);}
+  .bcmd{padding:12px;align-self:center;}
+  @container stage (max-width:639px){ .bcmd{align-self:end;} }
+
+  /* 技・コマンド */
+  #battleMenu{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  #battleMenu:empty{display:none;}
+  .mvBtn{text-align:left;background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-left:12px solid var(--tc,var(--ink));border-radius:14px;padding:10px 12px;min-height:62px;cursor:pointer;
+    box-shadow:var(--pop-sm);transition:transform .08s,box-shadow .08s;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+  .mvBtn:hover:not(:disabled){transform:translateY(-1px);}
+  .mvBtn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .mvBtn:disabled{opacity:.4;cursor:default;box-shadow:none;}
+  .mvBtn b{font-size:1.02em;} .mvmeta{font-size:.8em;color:var(--txt-dim);font-weight:700;}
+  .cmdRow{grid-column:1/-1;display:flex;gap:8px;}
+  .cmdBtn{flex:1;font-size:.98em;font-weight:800;background:var(--sun);color:var(--ink);border:var(--bw) solid var(--ink);border-radius:999px;padding:10px;min-height:52px;cursor:pointer;box-shadow:var(--pop-sm);transition:transform .08s,box-shadow .08s;}
+  .cmdBtn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .cmdBtn:disabled{opacity:.4;cursor:default;box-shadow:none;}
+  #battleMenu>.cmdBtn{grid-column:1/-1;background:#fff;}
+
+  /* クイズ */
+  .quizMove{font-size:.9em;margin-bottom:8px;font-weight:700;}
+  .quizMove b{color:#fff!important;background:var(--tc,var(--violet));border:2px solid var(--ink);border-radius:999px;padding:1px 10px;}
+  .quizQ{font-size:1.1em;line-height:1.65;font-weight:700;background:var(--bg);border:var(--bw) solid var(--ink);border-radius:16px;padding:12px 14px;}
+  #quizChoices{display:grid;gap:9px;margin-top:10px;counter-reset:ch;}
+  .qchoice{counter-increment:ch;display:flex;align-items:center;gap:10px;text-align:left;font-size:1em;font-weight:700;cursor:pointer;color:var(--ink);background:#fff;border:var(--bw) solid var(--ink);border-radius:14px;padding:10px 12px;min-height:54px;box-shadow:var(--pop-sm);transition:transform .08s,box-shadow .08s;}
+  .qchoice::before{content:counter(ch,upper-alpha);flex:0 0 30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--violet);color:#fff;border:2px solid var(--ink);font-weight:800;}
+  .qchoice:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .qchoice:disabled{cursor:default;}
+  .qchoice.correct{background:#c9f7d8;} .qchoice.correct::before{content:"◯";background:var(--lime);}
+  .qchoice.wrong{background:#ffd3d8;animation:wiggle .35s;}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}} .qchoice.wrong::before{content:"✕";background:var(--danger);}
+
+  /* 中和滴定 */
+  #titArea{min-width:0;}
+  .titHead{font-size:1.1em;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .titInfo{font-size:.9em;line-height:1.7;background:var(--bg);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;}
+  .titQ{font-size:1em;font-weight:800;margin:10px 2px 8px;}
+  .titInds{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .titStage{display:flex;justify-content:center;align-items:flex-end;gap:2px;height:clamp(150px,30cqh,220px);}
+  .titBuret{height:100%;width:auto;aspect-ratio:40/200;} .titFlask{height:88%;width:auto;aspect-ratio:1;}
+  .titVol{text-align:center;font-size:1em;font-weight:700;margin:6px 0 10px;} .titVol b{color:var(--amber);font-size:1.5em;font-variant-numeric:tabular-nums;}
+  .titBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+  .titBtns .mvBtn{align-items:center;text-align:center;padding:10px 4px;border-left-width:var(--bw);min-height:64px;}
+  .titBtns .mvBtn b{font-size:1.1em;}
+  .titStop{grid-column:1/-1;font-size:1.1em;padding:12px;min-height:58px;background:var(--rose);color:#fff;}
+  .titHint{font-size:.82em;color:var(--txt-dim);text-align:center;margin-top:8px;font-weight:700;}
+  #titCurve{display:block;width:100%;height:auto;background:#fff;border:2px solid var(--ink);border-radius:12px;}
+  .titLegend{font-size:.78em;text-align:center;margin-top:4px;font-weight:700;line-height:1.6;}
+
+
+  /* ---------- 中和道場 ---------- */
+  #dojo{display:none;position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;
+    background:radial-gradient(rgba(255,255,255,.7) 2px,transparent 2.6px),linear-gradient(#fff3c4 0%,#fffbe8 48%,#d4f4e2 48%,#bfeccf 100%);background-size:22px 22px,100% 100%;}
+  .dfield{display:flex;flex-direction:column;gap:12px;justify-content:space-around;min-height:100%;}
+  .dProg{text-align:center;font-weight:800;font-size:.9em;}
+  /* 年代整序道場 */
+  .seqGoal{text-align:center;font-weight:700;font-size:.92em;margin-bottom:8px;}
+  .seqRow{display:flex;align-items:stretch;gap:6px;justify-content:center;flex-wrap:wrap;}
+  .seqCard{position:relative;flex:1 1 130px;max-width:190px;min-width:120px;background:#fff;border:var(--bw) solid var(--ink);border-radius:16px;box-shadow:var(--pop-sm);padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:8px;text-align:center;transition:transform .1s;}
+  .seqCard:active{transform:translateY(2px);}
+  .seqCard.sel{box-shadow:0 0 0 4px var(--violet),var(--pop-sm);transform:translateY(-3px) rotate(-1deg);}
+  .seqText{font-weight:700;font-size:.9em;line-height:1.35;}
+  .seqNo{font-size:.78em;font-weight:800;color:var(--violet);background:#efeaff;border-radius:999px;padding:2px 8px;align-self:center;}
+  .seqYear{font-size:.82em;font-weight:800;color:#1fa861;background:#e5fbef;border-radius:999px;padding:2px 10px;align-self:center;}
+  .seqArrow{display:flex;align-items:center;color:var(--ink);opacity:.35;font-weight:800;}
+  .seqGoal .stgNo,.seqResult .stgNo{margin-right:6px;}
+  .seqHelp{text-align:center;font-size:.86em;color:#555;line-height:1.6;margin-top:4px;}
+  .seqHint{color:#c4561a;font-weight:700;}
+  .seqTries{text-align:center;font-size:.8em;color:#888;margin-top:6px;}
+  .seqResult{text-align:center;font-weight:800;font-size:1.05em;color:#1fa861;}
+  .seqChain{text-align:center;font-size:.85em;line-height:1.7;margin-top:8px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px 12px;box-shadow:var(--pop-sm);}
+  .bkRow{display:flex;gap:10px;justify-content:center;}
+  .bkCard{position:relative;flex:1 1 0;min-width:0;max-width:300px;background:#fff;border:var(--bw) solid var(--ink);border-radius:16px;box-shadow:var(--pop-sm);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;}
+  .bkCard.pick{cursor:pointer;} .bkCard.pick:active{transform:translateY(2px);}
+  .bkCard.sel{box-shadow:0 0 0 4px var(--violet),var(--pop-sm);}
+  .bkCard.done{background:#eafff0;}
+  .bkName{font-weight:800;font-size:.95em;line-height:1.3;}
+  .bkPics{display:flex;align-items:flex-end;justify-content:center;gap:2px;}
+  .bkArt{width:clamp(44px,8cqw,80px);aspect-ratio:1;} .bkArt svg{width:100%;height:100%;filter:var(--outline);--ol:1.4px;}
+  .bkArt.hidden svg{filter:brightness(0) opacity(.3);}
+  .bkBeaker{width:clamp(50px,8cqw,84px);height:auto;}
+  .bkInfo{font-size:.82em;color:var(--txt-dim);font-weight:700;line-height:1.55;} .bkInfo b{color:var(--ink);font-size:1.08em;}
+  .bkInfo .hint{color:var(--violet);font-size:.92em;}
+  .bkTag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.75em;font-weight:800;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;color:#fff;}
+  .bkTag.ok{background:var(--lime);} .bkTag.ng{background:var(--danger);}
+  .phMeter{width:100%;max-width:220px;margin-top:2px;}
+  .phBar{position:relative;height:12px;border:2px solid var(--ink);border-radius:999px;background:linear-gradient(90deg,#e53935,#ff9800 20%,#fdd835 36%,#43a047 50%,#1e88e5 68%,#3949ab 84%,#7b1fa2);}
+  .phNeedle{position:absolute;top:-7px;width:5px;height:22px;background:var(--ink);border:1.5px solid #fff;border-radius:3px;transform:translateX(-50%);transition:left .5s ease-out;}
+  .phVal{font-size:.85em;font-weight:800;margin-top:2px;}
+  .dMe{display:flex;align-items:center;gap:10px;justify-content:center;}
+  .dMe .bart{width:clamp(60px,12cqw,100px);}
+  .dGoal{font-size:.9em;font-weight:700;line-height:1.6;background:var(--bg);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;margin-bottom:8px;}
+  .stgNo{display:inline-block;background:var(--violet);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 9px;font-size:.85em;font-weight:800;margin-right:4px;}
+  .dLbl{font-size:.82em;font-weight:800;color:var(--txt-dim);margin:6px 2px 5px;} .dLbl b{color:var(--ink);}
+  .stdRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;} .toolRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .stdRow .mvBtn,.toolRow .mvBtn{border-left-width:var(--bw);min-height:56px;align-items:center;text-align:center;}
+  .mvBtn.on{background:var(--sun);box-shadow:0 0 0 3px var(--violet),var(--pop-sm);}
+  .volBox{display:flex;align-items:baseline;justify-content:center;gap:6px;font-weight:800;margin:10px 0 8px;}
+  .volBox .v{font-size:1.9em;min-width:4.6em;text-align:right;background:var(--bg);border:var(--bw) solid var(--ink);border-radius:12px;padding:0 12px;font-variant-numeric:tabular-nums;}
+  .kp{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .kp button{min-height:50px;font-size:1.2em;font-weight:800;background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--pop-sm);cursor:pointer;}
+  .kp button.q{background:var(--panel2);font-size:.92em;}
+  .kp button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .pourBtn{width:100%;margin-top:10px;font-size:1.15em;min-height:58px;background:var(--rose);color:#fff;}
+  .stepList{margin:6px 0 0 1.3em;font-size:.92em;line-height:1.75;}
+  .stars{font-size:1.25em;letter-spacing:3px;color:#ffb800;text-shadow:0 1px 0 var(--ink);} .stars .off{color:#d9d4ea;text-shadow:none;}
+  .stars.big{font-size:2.6em;text-align:center;margin:4px 0 8px;}
+  .resBtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+  .row.stg{align-items:flex-start;} .row.stg .sub{font-weight:500;}
+  /* SVG内の影は輪郭線フィルタで黒く潰れるので隠し、CSSの影に置き換える */
+  svg [fill^="rgba(0,0,0"]{display:none;}
+
+  /* 手持ちパネル（横画面の右カラム） */
+  #partyPanel{display:none;padding:8px 10px;flex:0 0 auto;}
+  #partyPanel .pp{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:.85em;font-weight:800;}
+  #partyPanel .pp+.pp{border-top:2px dashed var(--soft);}
+  #partyPanel .pp svg{width:34px;height:34px;flex:0 0 34px;filter:var(--outline);--ol:1px;}
+  #partyPanel .pp .ppi{flex:1;min-width:0;}
+  #partyPanel .pp .ppn{display:flex;justify-content:space-between;gap:4px;white-space:nowrap;}
+  #partyPanel .pp .ppn span:first-child{overflow:hidden;text-overflow:ellipsis;}
+  #partyPanel .pp.ko{opacity:.45;}
+  #partyPanel .hpline{height:9px;margin-top:2px;border-width:1.5px;}
+  @media (orientation:landscape) and (min-width:700px) and (min-height:560px){ #partyPanel{display:block;} }
+  /* ログ: 新しい順に数件。古いものは薄く */
+  #log .lg{padding:2px 0;} #log .lg+.lg{opacity:.5;font-size:.92em;border-top:1.5px dashed var(--soft);margin-top:3px;padding-top:4px;}
+
+  /* ---------- 汎用パーツ ---------- */
+  .sub{color:var(--txt-dim);font-size:.85em;}
+  .note{font-size:.9em;color:var(--txt);line-height:1.75;background:var(--bg);border:2px solid var(--ink);border-radius:14px;padding:10px 14px;}
+  .note b{color:var(--ink);}
+  .empty{color:var(--txt-dim);font-size:.9em;text-align:center;padding:18px;font-weight:700;}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:9px;font-weight:700;box-shadow:var(--pop-sm);}
+  .row .info{flex:1;} .row .sub{margin-top:2px;}
+  .actBtn{font-size:.95em;font-weight:800;background:var(--mint);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 18px;min-height:44px;cursor:pointer;box-shadow:var(--pop-sm);}
+  .actBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .statLine{font-size:1.05em;line-height:2.1;font-weight:700;} .statLine b{color:var(--violet);}
+  .miniBtn{font-size:.85em;font-weight:800;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:6px 10px;min-height:38px;cursor:pointer;box-shadow:0 2px 0 var(--ink);}
+  .miniBtn:disabled{opacity:.4;cursor:default;box-shadow:none;}
+
+  /* ---------- オーバーレイ（メニュー・ショップ等） ---------- */
+  .overlay{display:none;position:absolute;inset:0;z-index:20;background:rgba(42,35,80,.5);padding:12px;overflow:auto;overscroll-behavior:contain;}
+  .overlay.show{display:block;animation:fadeIn .15s;}
+  @keyframes fadeIn{from{opacity:0}}
+  .ovCard{position:relative;width:min(880px,100%);margin:0 auto;background:var(--bg);border:var(--bw) solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:16px;animation:popIn .18s ease-out;}
+  .ovTitle{font-size:1.35em;font-weight:800;text-align:center;margin:2px 60px 10px;color:var(--ink);}
+  .ovClose{position:absolute;right:12px;top:12px;font-size:.9em;font-weight:800;background:var(--danger);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:6px 14px;min-height:40px;cursor:pointer;z-index:2;box-shadow:var(--pop-sm);}
+  .ovClose:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink);}
+  .tabs{display:flex;gap:6px;justify-content:center;margin:8px 0 14px;flex-wrap:wrap;}
+  .tab{font-size:.95em;font-weight:800;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:7px 16px;min-height:42px;cursor:pointer;}
+  .tab.active{background:var(--violet);color:#fff;box-shadow:var(--pop-sm);}
+  .mpanel{display:none;} .mpanel.show{display:block;}
+  .monrow{display:flex;align-items:center;gap:12px;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:8px 12px;margin-bottom:9px;box-shadow:var(--pop-sm);}
+  .monrow.box{background:var(--panel2);}
+  .monart{width:54px;height:54px;flex:0 0 54px;} .monart svg{width:54px;height:54px;filter:var(--outline);--ol:1.2px;}
+  .moninfo{flex:1;min-width:0;}
+  .monname{font-size:1.02em;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .monsub{font-size:.82em;color:var(--txt-dim);margin-top:2px;font-weight:700;}
+  .xpbar{height:6px;background:#eceaf5;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-top:5px;}
+  .xpbar span{display:block;height:100%;background:var(--sky);}
+  .monbtns{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;}
+  .monbtns .miniBtn{white-space:nowrap;}
+  .dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px;}
+  .dexCard{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:8px;text-align:center;font-size:.85em;font-weight:800;box-shadow:var(--pop-sm);}
+  .dexCard svg{width:60px;height:60px;filter:var(--outline);--ol:1.2px;}
+  .dexCard.unknown{color:var(--txt-dim);background:var(--panel2);} .dexCard.unknown svg{filter:brightness(0) opacity(.25);}
+  .chartWrap{overflow-x:auto;}
+  table.chart{border-collapse:separate;border-spacing:3px;font-size:.9em;margin:0 auto;font-weight:800;}
+  table.chart th,table.chart td{background:#fff;border:2px solid var(--ink);border-radius:8px;padding:6px 8px;text-align:center;min-width:40px;}
+  table.chart .good{color:var(--lime);font-size:1.2em;} table.chart .bad{color:var(--danger);font-size:1.2em;}
+  .rankRow{display:flex;align-items:center;gap:10px;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;font-weight:700;box-shadow:var(--pop-sm);}
+  .rankRow.me{background:#fff4c2;}
+  .rankNo{flex:0 0 36px;font-weight:800;font-size:1.05em;text-align:center;}
+  .rankName{flex:1;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rankRec{flex:0 0 auto;color:var(--txt-dim);font-size:.9em;} .rankRec b{color:var(--amber);}
+  .vrow{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:9px;position:relative;box-shadow:var(--pop-sm);}
+  .vhead{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+  .vname{font-weight:800;font-size:1.05em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .vrec{font-size:.82em;color:var(--txt-dim);flex:0 0 auto;font-weight:700;}
+  .vteams{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;padding-right:84px;}
+  .vteam{position:relative;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;background:var(--panel2);border:2px solid var(--ink);border-radius:10px;}
+  .vteam svg{width:34px;height:34px;}
+  .vlv{position:absolute;right:-4px;bottom:-5px;font-size:.62em;background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:0 3px;color:var(--ink);font-weight:800;}
+  .vbtn{position:absolute;right:12px;bottom:12px;}
+  .noteItem{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:9px;font-size:.92em;line-height:1.8;box-shadow:var(--pop-sm);}
+  .noteItem h4{color:#fff;background:var(--violet);display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:0 12px;font-size:.95em;margin-bottom:6px;}
+
+  /* ---------- タイトル ---------- */
+  #titlescreen{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;overflow:auto;
+    background:radial-gradient(circle at 50% 30%,#fff7c8 0,#ffe27a 30%,transparent 62%),linear-gradient(160deg,#68d0ff,#b7efff 55%,#ffc9e4);}
+  #titlescreen::before,#titlescreen::after{content:"";position:absolute;border-radius:50%;border:3px solid rgba(255,255,255,.8);pointer-events:none;animation:float 6s ease-in-out infinite;}
+  #titlescreen::before{width:120px;height:120px;left:6%;top:12%;background:rgba(255,255,255,.25);}
+  #titlescreen::after{width:70px;height:70px;right:9%;bottom:14%;background:rgba(255,255,255,.3);animation-delay:-3s;}
+  @keyframes float{50%{transform:translateY(-16px)}}
+  #titlescreen .ttlBadge{font-size:.8em;letter-spacing:4px;color:#fff;background:var(--ink);border-radius:999px;padding:4px 14px;margin-bottom:10px;font-weight:800;}
+  .titleArt{margin-bottom:6px;} .titleArt svg{width:clamp(70px,12vw,120px);height:auto;filter:var(--outline);--ol:2px;animation:bob 1.8s ease-in-out infinite;}
+  .titleArt svg:nth-child(2){animation-delay:-.6s;} .titleArt svg:nth-child(3){animation-delay:-1.2s;}
+  #titlescreen h1{font-size:clamp(34px,6.5vw,72px);font-weight:800;letter-spacing:1px;line-height:1.15;margin-bottom:6px;color:#fff;
+    text-shadow:3px 0 var(--ink),-3px 0 var(--ink),0 3px var(--ink),0 -3px var(--ink),3px 3px var(--ink),-3px -3px var(--ink),3px -3px var(--ink),-3px 3px var(--ink),0 8px 0 var(--ink);}
+  #titlescreen h1 .t1{color:var(--rose);} #titlescreen h1 .t2{color:var(--sun);}
+  #titlescreen .sub{color:var(--ink);font-size:.95em;margin:8px 0 16px;font-weight:700;}
+  .nameField{margin-bottom:12px;}
+  .nameField input{font-family:inherit;font-size:1.1em;font-weight:700;text-align:center;background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-radius:999px;padding:11px 18px;width:min(300px,80vw);box-shadow:var(--pop-sm);-webkit-user-select:text;user-select:text;}
+  .nameField input:focus{outline:none;box-shadow:var(--pop-sm),var(--glow);}
+  .startBtn{font-size:1.2em;font-weight:800;cursor:pointer;letter-spacing:1px;background:var(--sun);color:var(--ink);border:var(--bw) solid var(--ink);border-radius:999px;padding:12px 36px;min-height:56px;margin:6px;box-shadow:var(--pop);transition:transform .08s,box-shadow .08s;}
+  .startBtn:hover{transform:translateY(-2px);}
+  .startBtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink);}
+  .startBtn.alt{background:var(--mint);}
+  #resetBtn{background:#fff;font-size:.8em;min-height:36px;margin-top:8px;}
+  #titlescreen .tip{color:var(--ink);font-size:.82em;margin-top:16px;line-height:1.8;background:rgba(255,255,255,.75);border:2px solid var(--ink);border-radius:14px;padding:8px 14px;max-width:640px;font-weight:500;}
+
+  /* ---------- スターター ---------- */
+  #starterModal{position:absolute;inset:0;z-index:52;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:auto;
+    background:radial-gradient(rgba(255,255,255,.6) 2px,transparent 2.6px),linear-gradient(160deg,#fff4c6,#ffd9ec);background-size:24px 24px,100% 100%;}
+  #starterModal.show{display:flex;}
+  #starterModal h2{font-size:1.6em;margin-bottom:4px;color:var(--ink);font-weight:800;}
+  #starterModal .sub{margin-bottom:18px;font-weight:700;}
+  #starterChoices{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+  .starterCard{background:#fff;border:var(--bw) solid var(--ink);border-top:14px solid var(--tc,var(--ink));border-radius:20px;padding:14px 12px;cursor:pointer;width:clamp(140px,22vw,210px);box-shadow:var(--pop);transition:transform .12s,box-shadow .12s;}
+  .starterCard:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 9px 0 var(--ink);}
+  .starterCard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink);}
+  .scart svg{width:clamp(80px,13vw,130px);height:auto;filter:var(--outline);--ol:2px;animation:bob 1.8s ease-in-out infinite;}
+  .scname{font-size:1.2em;font-weight:800;margin-top:6px;} .sctype{margin-top:6px;}
+
+  /* ---------- エンディング ---------- */
+  #ending{display:none;position:absolute;inset:0;z-index:55;overflow:hidden;color:#fff;--rose:#fff1a8;--cyan:#c4f6ff;--amber:#ffd23f;
+    text-shadow:0 2px 0 rgba(42,35,80,.6);
+    background:radial-gradient(#fff 1px,transparent 1.6px),linear-gradient(#2a1f6b,#5b3aa8 60%,#ff7ab0);background-size:40px 40px,100% 100%;}
+  #ending.show{display:block;}
+  #ending .edScroll{position:absolute;left:0;right:0;top:100%;padding:0 24px;text-align:center;}
+  #ending.run .edScroll{animation:edroll 34s linear forwards;}
+  @keyframes edroll{0%{top:100%;}100%{top:-240%;}}
+  #ending h2{font-size:1.8em;font-weight:800;margin:14px 0 8px;color:var(--sun);text-shadow:0 3px 0 var(--ink);}
+  #ending .edLine{font-size:1.05em;line-height:2;margin:4px 0;}
+  #ending .edLine b{color:var(--sun)!important;}
+  #ending .edHead{font-size:.9em;color:var(--sun);letter-spacing:3px;margin:20px 0 4px;font-weight:800;}
+  #ending .edDim{color:#e6defa;font-size:.92em;}
+  #ending .edArt{margin:16px auto;} #ending .edArt svg{width:110px;height:110px;filter:var(--outline);--ol:2px;}
+  #ending .startBtn{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:none;}
+
+  /* ---------- トースト ---------- */
+  #toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%) translateY(calc(-100% - 40px));background:var(--sun);border:var(--bw) solid var(--ink);border-radius:999px;color:var(--ink);padding:10px 22px;font-size:1em;font-weight:800;transition:transform .35s cubic-bezier(.3,1.5,.5,1);z-index:60;max-width:92vw;text-align:center;box-shadow:var(--pop);}
+  #toast.show{transform:translateX(-50%) translateY(0);} #toast b{color:var(--rose);}
+
+  /* ---------- 小さい画面の微調整 ---------- */
+  @media (max-width:480px){
+    :root{--bw:2.5px;--r:15px;}
+    #app{gap:8px;}
+    .title{font-size:1em;}
+    .iconBtn{padding:5px 11px;}
+    #battleMenu{gap:8px;}
+    .mvBtn{min-height:56px;padding:8px 10px;}
+  }
+  @media (orientation:landscape) and (max-height:500px){
+    :root{--fs:13px;}
+    #hud{padding:3px 8px;} .brand .logo,.brand .logo svg{width:28px;height:28px;} .title{display:none;}
+    .iconBtn{min-height:34px;padding:3px 10px;}
+    .dpad{--dk:44px!important;}
+    .keyhint{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+<!-- ===== Firebase（非同期対戦・クラウドセーブ・ランキング） =====
+     使い方: 下の FIREBASE_CONFIG に自分のプロジェクトの値を入れるだけ。
+     未設定（空のまま）でも、この端末内のローカル保存で普通に遊べます。 -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  /* ▼▼▼ ここにFirebaseコンソールの firebaseConfig を貼り付けると、クラスで共有できます ▼▼▼
+     空のままなら「この端末のみ」で動作します（授業前の試用OK）。 */
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAGvJIgwg40by-SataIwcGgND-SyMQNuYk",
+    authDomain: "acid-monster.firebaseapp.com",
+    projectId: "acid-monster",
+    storageBucket: "acid-monster.appspot.com"
+  }; /* acid-monster プロジェクト（クラウド同期：非同期対戦・ランキング・編成登録） */
+  /* ▲▲▲ ここまで ▲▲▲ */
+</script>
+</head>
+<body>
+<div id="app">
+  <header id="hud" class="card">
+    <div class="brand"><span class="logo" id="logoSlot"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <defs><lineargradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"></stop><stop offset="1" stop-color="rgba(255,255,255,0)"></stop></lineargradient></defs>
+    <circle cx="20" cy="20" r="18.2" fill="none" stroke="#ff8aa0" stroke-width="1" stroke-dasharray="1.5 3.5" stroke-linecap="round"></circle><ellipse cx="20" cy="36" rx="10" ry="2" fill="rgba(0,0,0,.3)"></ellipse>
+   <path d="M6 20 Q2 14 7 12 Q6 18 11 19 Z" fill="#ff8aa0"></path><path d="M34 20 Q38 14 33 12 Q34 18 29 19 Z" fill="#ff8aa0"></path>
+   <path d="M20 6 L17 11 L23 11 Z" fill="#ffd0d8"></path>
+   <ellipse cx="20" cy="22" rx="11" ry="12" fill="#f0566e"></ellipse><ellipse cx="20" cy="22" rx="11" ry="12" fill="url(#gg)"></ellipse>
+   <path d="M20 10 L16 16 h8 Z" fill="#ff8aa0"></path>
+   <path d="M14 14 l-2 -5 l4 3 Z M26 14 l2 -5 l-4 3 Z" fill="#ffd0d8"></path>
+   <circle cx="20" cy="26" r="2.2" fill="#ffd0d8" opacity=".7"></circle><circle cx="15" cy="19" r="2.4" fill="#fff"></circle><circle cx="25" cy="19" r="2.4" fill="#fff"></circle><circle cx="15" cy="19" r="1.2" fill="#3a0a12"></circle><circle cx="25" cy="19" r="1.2" fill="#3a0a12"></circle>
+   <path d="M15 26 q5 3 10 0" stroke="#3a0a12" stroke-width="1.4" fill="none"></path>
+   <path d="M17 23 l-2 2 M23 23 l2 2" stroke="#fff" stroke-width="1.2"></path></svg></span><span class="title">ヒストリモンスター</span></div>
+    <div class="stats">
+      <div class="chip">👤 <b id="pname">―</b></div>
+      <div class="chip gold">✦ <b id="gold">0</b></div>
+      <div class="chip">🏅 <b id="badges">0</b></div>
+      <div class="chip">📖 <b id="dexn">0</b></div>
+      <div class="chip leadwrap"><span id="leadName">―</span><span class="leadbar"><span class="leadfill" id="leadHp" style="width:100%"></span></span><span id="leadHpTxt" class="sub"></span></div>
+    </div>
+    <div class="hbtns"><button class="iconBtn" id="bgmBtn" title="BGM" aria-label="BGMの切り替え">♪</button><button class="iconBtn" id="openMenu">☰ MENU</button></div>
+  </header>
+
+  <main id="stage" class="card">
+    <div id="viewport">
+      <div id="world"></div>
+      <div id="areaName">―</div>
+      <canvas id="minimap" width="86" height="58"></canvas>
+      <div id="dialogue">
+        <div class="portrait" id="portrait"></div>
+        <div class="dlgBody"><div class="dlgName" id="dlgName"></div><div class="dlgText" id="dlgText"></div><div class="dlgHint">▼ タップ / Enter で次へ</div></div>
+      </div>
+    </div>
+
+    <!-- BATTLE -->
+    <div id="battle">
+      <div class="battleInner">
+        <div class="bfield">
+          <div class="brow foe">
+            <div class="bart" id="foeArt"></div>
+            <div class="bcard"><div class="bname"><span id="foeName">―</span><span id="foeType"></span></div>
+              <div class="blv" id="foeLv">Lv―</div><div class="hpline"><span id="foeHp" style="width:100%"></span></div></div>
+          </div>
+          <div class="bmid"><span class="partyDots" id="partyDots"></span><span class="combo" id="comboTag"></span></div>
+          <div class="brow me">
+            <div class="bart" id="myArt"></div>
+            <div class="bcard"><div class="bname"><span id="myName">―</span><span id="myType"></span></div>
+              <div class="blv" id="myLv">Lv―</div><div class="hpline"><span id="myHp" style="width:100%"></span></div>
+              <div class="hptxt" id="myHpTxt"></div><div class="xpline"><span id="myExp" style="width:0%"></span></div></div>
+          </div>
+        </div>
+        <div class="bcmd card">
+          <div id="battleMenu"></div>
+          <div id="titArea" style="display:none;"></div>
+          <div id="quizArea" style="display:none;">
+            <div class="quizMove" id="quizMove"></div>
+            <div class="quizQ" id="quizQ"></div>
+            <div id="quizChoices"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 中和道場 -->
+    <div id="dojo"><div class="battleInner"><div class="dfield" id="dField"></div><div class="bcmd card" id="dCmd"></div></div></div>
+  </main>
+
+  <aside id="side">
+    <div id="log" class="card"><div class="lg"><span class="sys">▶ </span>「はじめる」を押して冒険へ。</div></div>
+    <div id="partyPanel" class="card"></div>
+    <div id="controls">
+      <div class="dpad"><div class="spacer"></div><button data-d="up" aria-label="上">▲</button><div class="spacer"></div><button data-d="left" aria-label="左">◀</button><div class="hub"></div><button data-d="right" aria-label="右">▶</button><div class="spacer"></div><button data-d="down" aria-label="下">▼</button><div class="spacer"></div></div>
+      <div class="keyhint">移動 ←↑→↓ / WASD・マップをタップでも移動<br>会話 Space ／ メニュー M</div>
+    </div>
+  </aside>
+
+  <!-- MENU -->
+  <div class="overlay" id="menu"><div class="ovCard">
+    <button class="ovClose" id="closeMenu">× 閉じる</button>
+    <div class="ovTitle">MENU</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="team">手持ち</button>
+      <button class="tab" data-tab="bag">道具</button>
+      <button class="tab" data-tab="dex">図鑑</button>
+      <button class="tab" data-tab="type">相性</button>
+      <button class="tab" data-tab="note">まとめ</button>
+    </div>
+    <div class="mpanel show" id="mpanel-team"></div>
+    <div class="mpanel" id="mpanel-bag"></div>
+    <div class="mpanel" id="mpanel-dex"></div>
+    <div class="mpanel" id="mpanel-type"></div>
+    <div class="mpanel" id="mpanel-note"></div>
+  </div></div>
+
+  <!-- SHOP -->
+  <div class="overlay" id="shop"><div class="ovCard">
+    <button class="ovClose" id="closeShop">× 出る</button>
+    <div class="ovTitle">🛍 補給ショップ</div>
+    <div style="text-align:center;font-weight:800;margin-bottom:10px;">所持 ✦ <b id="shopGold" style="color:var(--gold)">0</b></div>
+    <div id="shopList"></div>
+  </div></div>
+
+  <!-- REGISTER -->
+  <div class="overlay" id="register"><div class="ovCard">
+    <button class="ovClose" id="closeRegister">× 閉じる</button>
+    <div class="ovTitle">📋 編成登録</div>
+    <div id="registerBody"></div>
+  </div></div>
+
+  <!-- RANKING -->
+  <div class="overlay" id="ranking"><div class="ovCard">
+    <button class="ovClose" id="closeRanking">× 閉じる</button>
+    <div class="ovTitle">🏆 ランキング</div>
+    <div id="rankingBody"></div>
+  </div></div>
+
+  <!-- VERSUS (自由対戦) -->
+  <div class="overlay" id="versus"><div class="ovCard">
+    <button class="ovClose" id="closeVersus">× 閉じる</button>
+    <div class="ovTitle">⚔ 自由対戦</div>
+    <div id="versusBody"></div>
+  </div></div>
+
+  <!-- 中和道場: 段の選択 -->
+  <div class="overlay" id="dojoMenu"><div class="ovCard">
+    <button class="ovClose" id="closeDojo">× 出る</button>
+    <div class="ovTitle">🥋 年代整序道場</div>
+    <div id="dojoMenuBody"></div>
+  </div></div>
+
+  <!-- TITLE -->
+  <div id="titlescreen">
+    <div class="ttlBadge">JAPAN HISTORY</div>
+    <div class="titleArt" id="titleArt"><div style="display:flex;gap:6px;justify-content:center"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <defs><lineargradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"></stop><stop offset="1" stop-color="rgba(255,255,255,0)"></stop></lineargradient></defs>
+    <circle cx="20" cy="20" r="18.2" fill="none" stroke="#ff8aa0" stroke-width="1" stroke-dasharray="1.5 3.5" stroke-linecap="round"></circle><ellipse cx="20" cy="36" rx="10" ry="2" fill="rgba(0,0,0,.3)"></ellipse>
+   <path d="M6 20 Q2 14 7 12 Q6 18 11 19 Z" fill="#ff8aa0"></path><path d="M34 20 Q38 14 33 12 Q34 18 29 19 Z" fill="#ff8aa0"></path>
+   <path d="M20 6 L17 11 L23 11 Z" fill="#ffd0d8"></path>
+   <ellipse cx="20" cy="22" rx="11" ry="12" fill="#f0566e"></ellipse><ellipse cx="20" cy="22" rx="11" ry="12" fill="url(#gg)"></ellipse>
+   <path d="M20 10 L16 16 h8 Z" fill="#ff8aa0"></path>
+   <path d="M14 14 l-2 -5 l4 3 Z M26 14 l2 -5 l-4 3 Z" fill="#ffd0d8"></path>
+   <circle cx="20" cy="26" r="2.2" fill="#ffd0d8" opacity=".7"></circle><circle cx="15" cy="19" r="2.4" fill="#fff"></circle><circle cx="25" cy="19" r="2.4" fill="#fff"></circle><circle cx="15" cy="19" r="1.2" fill="#3a0a12"></circle><circle cx="25" cy="19" r="1.2" fill="#3a0a12"></circle>
+   <path d="M15 26 q5 3 10 0" stroke="#3a0a12" stroke-width="1.4" fill="none"></path>
+   <path d="M17 23 l-2 2 M23 23 l2 2" stroke="#fff" stroke-width="1.2"></path></svg><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <defs><lineargradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"></stop><stop offset="1" stop-color="rgba(255,255,255,0)"></stop></lineargradient></defs>
+    <circle cx="20" cy="20" r="18.2" fill="none" stroke="#7fb0ff" stroke-width="1" stroke-dasharray="1.5 3.5" stroke-linecap="round"></circle><ellipse cx="20" cy="36" rx="11" ry="2" fill="rgba(0,0,0,.3)"></ellipse>
+   <rect x="8" y="10" width="24" height="24" rx="4" fill="#4a8af0"></rect><rect x="8" y="10" width="24" height="24" rx="4" fill="url(#gg)"></rect>
+   <rect x="12" y="14" width="16" height="10" rx="2" fill="#7fb0ff" opacity=".5"></rect>
+   <circle cx="14" cy="29" r="1.5" fill="#cfe0ff" opacity=".6"></circle><circle cx="26" cy="29" r="1.5" fill="#cfe0ff" opacity=".6"></circle>
+   <circle cx="15" cy="19" r="2.4" fill="#fff"></circle><circle cx="25" cy="19" r="2.4" fill="#fff"></circle><circle cx="15" cy="19" r="1.2" fill="#07122e"></circle><circle cx="25" cy="19" r="1.2" fill="#07122e"></circle><path d="M16 26 h8" stroke="#07122e" stroke-width="1.4"></path>
+   <rect x="5" y="16" width="3" height="10" rx="1.5" fill="#4a8af0"></rect><rect x="32" y="16" width="3" height="10" rx="1.5" fill="#4a8af0"></rect></svg><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <defs><lineargradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"></stop><stop offset="1" stop-color="rgba(255,255,255,0)"></stop></lineargradient></defs>
+    <ellipse cx="20" cy="36" rx="8" ry="2" fill="rgba(0,0,0,.3)"></ellipse>
+   <path d="M7 20 Q0 16 3 26 Q8 24 12 24 Z" fill="#d9a8f7"></path><path d="M33 20 Q40 16 37 26 Q32 24 28 24 Z" fill="#d9a8f7"></path>
+   <path d="M20 32 l-4 6 h8 Z" fill="#d9a8f7"></path>
+   <ellipse cx="20" cy="20" rx="9" ry="11" fill="#c77cf0"></ellipse><ellipse cx="20" cy="20" rx="9" ry="11" fill="url(#gg)"></ellipse>
+   <path d="M20 8 L17 4 L20 6 L23 4 Z" fill="#efd8ff"></path>
+   <circle cx="20" cy="24" r="2.2" fill="#efd8ff" opacity=".7"></circle><circle cx="16" cy="17" r="1.7" fill="#2a0a3a"></circle><circle cx="24" cy="17" r="1.7" fill="#2a0a3a"></circle>
+   <path d="M20 21 l-3 3 h6 Z" fill="#efd8ff"></path></svg></div></div>
+    <h1><span class="t1">ヒストリ</span><span class="t2">モンスター</span></h1>
+    <div class="sub">日本史 全時代を復習するモンスターバトル</div>
+    <div class="nameField"><input id="nameInput" maxlength="8" placeholder="トレーナー名（8字まで）" autocomplete="off"></div>
+    <div>
+      <button class="startBtn" id="newBtn">▶ はじめる</button>
+      <button class="startBtn alt" id="contBtn" style="display: inline-block;">つづきから</button>
+    </div>
+    <button class="iconBtn" id="resetBtn">セーブ削除</button>
+    <div class="tip">移動 = 十字キー・マップをタップ・矢印/WASD　会話 = タップ/Space　メニュー = ☰/M<br>草むらで出会い、技で歴史クイズに正解して戦う。相性とコンボを活かし、弱らせて捕獲。<br>アリーナでCPUに挑戦（バッジ）。⚔で登録者と自由対戦、📋で編成登録、🏆でランキング！</div>
+  </div>
+
+  <!-- STARTER -->
+  <div id="starterModal">
+    <h2>最初の相棒を選ぼう</h2>
+    <div class="sub">政治・外交・社会、3タイプから1体</div>
+    <div id="starterChoices"></div>
+  </div>
+
+  <!-- ENDING -->
+  <div id="ending"><div class="edScroll" id="edScroll"></div><button class="startBtn" id="edClose">▶ アリーナへ戻る</button></div>
+</div>
+<div id="toast"></div>
+
+<script id="dataScript">
+/* =========================================================
+   酸塩基モンスターズ ― データ層
+   範囲: 酸と塩基 / 水素イオン濃度(pH) / 中和と塩 / 中和滴定
+   ・6属性 + 相性表
+   ・問題: 固定 {q,correct,wrong[]} と 生成 {gen:()=>({q,correct,wrong[]})}
+   ・モンスター種族: 種族値/属性/進化/習得技
+   ========================================================= */
+function ri(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+/* 数字を上付き文字に（指数表記用）: sup(-3)→"⁻³" */
+function sup(n){const m={"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","-":"⁻"};return String(n).split("").map(c=>m[c]||c).join("");}
+function fmt(n){ n=Math.round(n*1000)/1000; return Number.isInteger(n)?String(n):String(n); }
+/* 数値選択肢を安全生成（正解と誤答が絶対に重複しない） */
+function mc(correct, unit, wrongNums){
+  const label=v=>fmt(v)+unit, cStr=label(correct), out=[], seen=new Set([cStr]);
+  const push=v=>{ if(v===undefined||v===null||!isFinite(v))return; const s=label(v); if(!seen.has(s)){seen.add(s);out.push(s);} };
+  (wrongNums||[]).forEach(push);
+  const fills=[correct*2,correct/2,correct*10,correct/10,correct+1,correct>1?correct-1:correct+2,correct*3,correct*1.5];
+  for(const f of fills){ if(out.length>=3)break; push(f); }
+  let k=1; while(out.length<3){ push(correct+k*(correct||1)); k++; if(k>20)break; }
+  return {correct:cStr, wrong:out.slice(0,3)};
+}
+
+/* ===== 属性（タイプ） ===== */
+/* acid 酸性 / base 塩基性 / neutral 中和 / indicator 指示薬 / titration 滴定 / ion イオン(pH・濃度) */
+/* ===== 日本史版: タイプ＝歴史の分野（キーは互換のため英語名のまま流用） =====
+   acid→政治, base→外交, neutral→社会・経済, indicator→文化, titration→史料, ion→宗教・思想 */
+const TYPES = {
+  acid:      {name:"政治", color:"#e14b4b", icon:"⚔"},
+  base:      {name:"外交", color:"#3d7bff", icon:"🚢"},
+  neutral:   {name:"社会経済", color:"#1fa861", icon:"🌾"}, /* キーは neutral のまま（セーブ互換） */
+  indicator: {name:"文化", color:"#c06bd6", icon:"🎎"},
+  titration: {name:"史料", color:"#e0901a", icon:"📜"},
+  ion:       {name:"宗教思想", color:"#10a3c8", icon:"⛩"},
+  normal:    {name:"無", color:"#8a8fa8", icon:"⚪"}, /* 無属性（常に等倍） */
+};
+/* 相性: attacker -> defender 倍率。2=効果抜群, 0.5=いまひとつ, 1=等倍
+   設計の筋: 酸⇔塩基は互いに抜群(中和の主役)。
+   塩(neutral)は個体ごとに液性を持つ（SALTS）。酸性の塩は「酸」、塩基性の塩は「塩基」として相性を計算し、
+   中性の塩は酸・塩基に対して等倍（中和しても何でも打ち消せるわけではない）。→ typeMulMon()
+   指示薬は滴定・イオンの"見える化"で強い。滴定は中和(塩)・イオンに強い。イオンは指示薬・酸塩基の土台で均衡。 */
+const CHART = {
+  acid:      {base:2,   neutral:1,   titration:1,   ion:1,   indicator:1,   acid:1},
+  base:      {acid:2,   neutral:1,   titration:1,   ion:1,   indicator:1,   base:1},
+  neutral:   {acid:1,   base:1,      ion:0.5,       titration:1, indicator:1, neutral:1},
+  indicator: {titration:2, ion:2,    acid:0.5,      base:0.5, neutral:1,     indicator:1},
+  titration: {neutral:2, ion:2,      indicator:0.5, acid:1,   base:1,        titration:1},
+  ion:       {indicator:2, acid:1,   base:1,        neutral:1, titration:0.5, ion:1},
+};
+function typeMul(atk,def){ return (CHART[atk] && CHART[atk][def]!==undefined) ? CHART[atk][def] : 1; }
+
+/* ===== 塩（タスク4 案B）=====
+   塩タイプの個体は salt（下のキー）を持つ。液性は元の酸・塩基の強弱から求める（手で書かない）:
+   強酸＋強塩基→中性 / 弱酸＋強塩基→塩基性 / 強酸＋弱塩基→酸性 */
+/* 日本史版: neutral(社会経済)個体の内部区分。機構は維持し表示だけ歴史テーマに。
+   acidStrong/baseStrong の真偽の組み合わせで中立/政治寄り/外交寄りを表す（相性計算に流用） */
+const SALTS={
+  NaCl:    {name:"律令制",   formula:"律令", acid:"中央集権", acidStrong:true,  base:"大陸制度の導入", baseStrong:true},
+  Na2SO4:  {name:"荘園公領制", formula:"荘園", acid:"土地支配", acidStrong:true,  base:"朝廷の権威",     baseStrong:true},
+  CH3COONa:{name:"封建制",   formula:"封建", acid:"主従関係", acidStrong:false, base:"幕府の統制",     baseStrong:true},
+  NH4Cl:   {name:"貨幣経済", formula:"貨幣", acid:"流通の発達", acidStrong:true, base:"対外交易",       baseStrong:false},
+};
+const DEFAULT_SALT="NaCl"; /* 古いセーブ・未指定のトレーナー編成 */
+const LIQ={neutral:{name:"中性",as:null},basic:{name:"塩基性",as:"base"},acidic:{name:"酸性",as:"acid"}};
+function saltLiq(key){const S=SALTS[key]||SALTS[DEFAULT_SALT];
+  return S.acidStrong===S.baseStrong?"neutral":(S.baseStrong?"basic":"acidic");}
+function saltOrigin(key){const S=SALTS[key]||SALTS[DEFAULT_SALT];return (S.acidStrong?"強酸":"弱酸")+"＋"+(S.baseStrong?"強塩基":"弱塩基");}
+function isSaltSp(spKey){return !!SPECIES[spKey]&&SPECIES[spKey].type==="neutral";}
+function validSalt(k){return typeof k==="string"&&Object.prototype.hasOwnProperty.call(SALTS,k);}
+/* 個体の「防御側」タイプ: 酸性・塩基性の塩は acid/base として扱う */
+function monType(mon){const t=SPECIES[mon.sp].type; if(t!=="neutral")return t;
+  return LIQ[saltLiq(mon.salt)].as||"neutral";}
+/* 技の「攻撃側」タイプ: 塩の個体が塩タイプの技を使うと、その液性（酸/塩基）としてはたらく */
+function moveTypeFor(mv,attacker){ if(mv.type!=="neutral"||!attacker||!isSaltSp(attacker.sp))return mv.type;
+  return LIQ[saltLiq(attacker.salt)].as||"neutral";}
+function typeMulMon(mv,attacker,defender){return typeMul(moveTypeFor(mv,attacker),monType(defender));}
+/* 表示用 "CH₃COONa（塩基性）" */
+function saltLabel(key,showLiq){const S=SALTS[key]||SALTS[DEFAULT_SALT];return S.formula+(showLiq?"（"+LIQ[saltLiq(key)].name+"）":"");}
+
+/* ===== 技（技=クイズ）=====
+   各技: name, type, power(基礎威力), acc(基礎命中…クイズ正解で発動), qkey(問題プール)
+   問題は QUESTIONS[qkey] から出題。 */
+/* 日本史版: 技＝分野別クイズ（キーは互換のため流用、表示と出題プールを差し替え） */
+const MOVES = {
+  // 政治(acid)
+  protonShot:{name:"政変の一手", type:"acid", power:35, qkey:"pol_basic"},
+  strongAcid:{name:"改革ブレイク", type:"acid", power:55, qkey:"pol_adv"},
+  // 外交(base)
+  hydroxide:{name:"遣使の波", type:"base", power:35, qkey:"dip_basic"},
+  strongBase:{name:"開国クラッシュ", type:"base", power:55, qkey:"dip_adv"},
+  // 社会経済(neutral)
+  neutralize:{name:"一揆の一撃", type:"neutral", power:40, qkey:"soc_basic"},
+  saltForm:{name:"流通ブラスト", type:"neutral", power:55, qkey:"soc_adv"},
+  // 文化(indicator)
+  litmus:{name:"文化フラッシュ", type:"indicator", power:35, qkey:"cul_basic"},
+  phenol:{name:"黄金文化閃光", type:"indicator", power:50, qkey:"cul_adv"},
+  // 史料(titration)
+  burette:{name:"史料ドロップ", type:"titration", power:40, qkey:"src_basic"},
+  equivPoint:{name:"史料読解ストライク", type:"titration", power:58, qkey:"src_adv"},
+  // 宗教思想(ion)
+  phScan:{name:"宗教スキャン", type:"ion", power:35, qkey:"rel_basic"},
+  ionBurst:{name:"思想バースト", type:"ion", power:55, qkey:"rel_adv"},
+  // 無属性（基本技・全員）
+  tackle:{name:"年号タックル", type:"normal", power:28, qkey:"mixed_easy"},
+};
+
+/* ===== 問題プール（日本史 全範囲の復習） =====
+   分野: 政治(pol)/外交(dip)/社会経済(soc)/文化(cul)/史料(src)/宗教思想(rel)
+   四天王・博士・Administrator は hard_* の入試級(因果考察・史料読解・正誤判定)を出題 */
+const QUESTIONS = {
+  /* --- 政治 基礎 --- */
+  pol_basic:[
+    {q:"聖徳太子が定めた、役人の心得を説いた法は？", correct:"十七条の憲法", wrong:["御成敗式目","武家諸法度","大宝律令"]},
+    {q:"645年、中大兄皇子と中臣鎌足が蘇我氏を倒した政変は？", correct:"乙巳の変（大化の改新の始まり）", wrong:["壬申の乱","承久の乱","応仁の乱"]},
+    {q:"710年に遷都された、奈良の都は？", correct:"平城京", wrong:["平安京","藤原京","長岡京"]},
+    {q:"鎌倉幕府を開いた人物は？", correct:"源頼朝", wrong:["足利尊氏","平清盛","北条時宗"]},
+    {q:"江戸幕府を開いた人物は？", correct:"徳川家康", wrong:["豊臣秀吉","織田信長","徳川吉宗"]},
+    {q:"摂関政治で、天皇が幼いとき政治を代行する職は？", correct:"摂政", wrong:["関白","太政大臣","征夷大将軍"]},
+  ],
+  /* --- 政治 応用 --- */
+  pol_adv:[
+    {q:"1221年、後鳥羽上皇が鎌倉幕府に対して起こした戦いは？", correct:"承久の乱", wrong:["保元の乱","平治の乱","応仁の乱"]},
+    {q:"鎌倉幕府の執権政治を確立した北条氏の職は？", correct:"執権", wrong:["管領","老中","関白"]},
+    {q:"1232年、北条泰時が定めた武家最初の法典は？", correct:"御成敗式目（貞永式目）", wrong:["武家諸法度","禁中並公家諸法度","分国法"]},
+    {q:"徳川吉宗が行った幕政改革は？", correct:"享保の改革", wrong:["寛政の改革","天保の改革","建武の新政"]},
+    {q:"老中松平定信が行った改革は？", correct:"寛政の改革", wrong:["享保の改革","天保の改革","安政の改革"]},
+    {q:"1868年、新政府の方針を示した五箇条の御誓文の翌年に行われた、藩の領地と人民を返させた政策は？", correct:"版籍奉還", wrong:["廃藩置県","地租改正","秩禄処分"]},
+  ],
+  /* --- 外交 基礎 --- */
+  dip_basic:[
+    {q:"7世紀、唐の制度や文化を学ぶため派遣された使節は？", correct:"遣唐使", wrong:["遣隋使のみ","朝鮮通信使","南蛮貿易使"]},
+    {q:"元寇（文永・弘安の役）のとき、元軍を迎え撃った執権は？", correct:"北条時宗", wrong:["北条泰時","北条義時","足利義満"]},
+    {q:"室町時代、足利義満が明と行った貿易は？", correct:"勘合貿易（日明貿易）", wrong:["南蛮貿易","朱印船貿易","出島貿易"]},
+    {q:"1543年、種子島に伝わった、ヨーロッパの武器は？", correct:"鉄砲", wrong:["大砲","火薬だけ","弓"]},
+    {q:"江戸時代の対外関係で、唯一ヨーロッパ（オランダ）と貿易した場所は？", correct:"長崎の出島", wrong:["横浜","神戸","堺"]},
+    {q:"1853年、浦賀に来航して開国を求めたアメリカの人物は？", correct:"ペリー", wrong:["ハリス","ザビエル","シーボルト"]},
+  ],
+  /* --- 外交 応用 --- */
+  dip_adv:[
+    {q:"1858年に結ばれ、関税自主権がなく領事裁判権を認めた不平等条約は？", correct:"日米修好通商条約", wrong:["日米和親条約","下関条約","ポーツマス条約"]},
+    {q:"1894年に始まった、朝鮮をめぐる日本と清の戦争は？", correct:"日清戦争", wrong:["日露戦争","第一次世界大戦","西南戦争"]},
+    {q:"日露戦争の講和条約は？", correct:"ポーツマス条約", wrong:["下関条約","ベルサイユ条約","サンフランシスコ平和条約"]},
+    {q:"1911年、小村寿太郎が達成した条約改正の内容は？", correct:"関税自主権の回復", wrong:["領事裁判権の撤廃","治外法権の獲得","賠償金の放棄"]},
+    {q:"1951年に結ばれ、日本が独立を回復した条約は？", correct:"サンフランシスコ平和条約", wrong:["日米安全保障条約のみ","ポーツマス条約","下関条約"]},
+    {q:"陸奥宗光が1894年に撤廃に成功した、不平等条約の内容は？", correct:"領事裁判権（治外法権）の撤廃", wrong:["関税自主権の回復","賠償金の獲得","樺太の割譲"]},
+  ],
+  /* --- 社会経済 基礎 --- */
+  soc_basic:[
+    {q:"班田収授法で、6歳以上に与えられた土地は？", correct:"口分田", wrong:["荘園","墾田","国衙領"]},
+    {q:"743年に出され、開墾地の永久私有を認めた法は？", correct:"墾田永年私財法", wrong:["三世一身法","班田収授法","地租改正条例"]},
+    {q:"鎌倉・室町時代、同業者が作った組合は？", correct:"座", wrong:["株仲間","問屋","両替商"]},
+    {q:"江戸時代、年貢の中心となった身分は？", correct:"百姓（農民）", wrong:["武士","町人","公家"]},
+    {q:"1872年の学制、徴兵令とともに行われた、土地に課税する改革は？", correct:"地租改正", wrong:["版籍奉還","廃藩置県","殖産興業"]},
+    {q:"室町時代、農民が借金帳消しなどを求めて起こした行動は？", correct:"土一揆", wrong:["打ちこわし","一向一揆のみ","百姓一揆のみ"]},
+  ],
+  /* --- 社会経済 応用 --- */
+  soc_adv:[
+    {q:"豊臣秀吉が行い、農民から武器を取り上げた政策は？", correct:"刀狩", wrong:["検地のみ","楽市楽座","参勤交代"]},
+    {q:"秀吉の太閤検地によって、はっきり分けられた身分は？", correct:"武士と農民（兵農分離）", wrong:["公家と武家","町人と商人","僧と俗"]},
+    {q:"江戸時代、幕府が株仲間に営業独占を認めた見返りは？", correct:"運上・冥加（営業税）", wrong:["年貢","地租","関税"]},
+    {q:"江戸時代の都市で、米の値上がりなどに対し民衆が起こした行動は？", correct:"打ちこわし", wrong:["土一揆","国一揆","惣村の形成"]},
+    {q:"明治政府が近代産業を育てるため官営工場を作った政策は？", correct:"殖産興業", wrong:["富国強兵のみ","文明開化","地租改正"]},
+    {q:"1880年代以降に進んだ、紡績・製糸など軽工業中心の変化を何という？", correct:"産業革命", wrong:["農地改革","高度経済成長","バブル経済"]},
+  ],
+  /* --- 文化 基礎 --- */
+  cul_basic:[
+    {q:"聖武天皇の頃に栄えた、仏教と唐の影響を受けた文化は？", correct:"天平文化", wrong:["国風文化","飛鳥文化","元禄文化"]},
+    {q:"かな文字が発達し『源氏物語』が書かれた、平安中期の文化は？", correct:"国風文化", wrong:["天平文化","鎌倉文化","桃山文化"]},
+    {q:"金閣を建てた足利義満の頃の文化は？", correct:"北山文化", wrong:["東山文化","化政文化","南蛮文化"]},
+    {q:"銀閣・書院造・水墨画に代表される文化は？", correct:"東山文化", wrong:["北山文化","元禄文化","天平文化"]},
+    {q:"上方（京都・大坂）の町人が担った、井原西鶴や近松門左衛門の文化は？", correct:"元禄文化", wrong:["化政文化","桃山文化","国風文化"]},
+    {q:"江戸の町人が担い、浮世絵（葛飾北斎ら）が栄えた文化は？", correct:"化政文化", wrong:["元禄文化","桃山文化","東山文化"]},
+  ],
+  /* --- 文化 応用 --- */
+  cul_adv:[
+    {q:"『古今和歌集』が編まれ、紀貫之が仮名序を書いた時代の文化は？", correct:"国風文化（平安中期）", wrong:["天平文化","鎌倉文化","飛鳥文化"]},
+    {q:"東大寺南大門の金剛力士像を作った鎌倉時代の仏師は？", correct:"運慶・快慶", wrong:["行基","空海","雪舟"]},
+    {q:"安土桃山時代、豪華な城・障壁画（狩野永徳ら）に代表される文化は？", correct:"桃山文化", wrong:["元禄文化","化政文化","東山文化"]},
+    {q:"『解体新書』を訳し、蘭学を広めた人物は？", correct:"杉田玄白・前野良沢", wrong:["本居宣長","伊能忠敬","平賀源内"]},
+    {q:"『古事記伝』を著し、国学を大成した人物は？", correct:"本居宣長", wrong:["杉田玄白","荻生徂徠","新井白石"]},
+    {q:"明治初期、西洋思想を紹介し『学問のすゝめ』を著した人物は？", correct:"福沢諭吉", wrong:["中江兆民","板垣退助","夏目漱石"]},
+  ],
+  /* --- 史料（基礎・何の史料か判定） --- */
+  src_basic:[
+    {q:"「和をもって貴しとなし…」で始まる史料は？", correct:"十七条の憲法", wrong:["御成敗式目","五箇条の御誓文","大日本帝国憲法"]},
+    {q:"「諸国の百姓、刀・脇指・弓・やり…停止候事」とある史料が示す政策は？", correct:"刀狩令", wrong:["楽市楽座令","墾田永年私財法","参勤交代の制"]},
+    {q:"「農民は…農具さへもち、耕作専一に仕り候へば…」と農民支配を説いた江戸期の文書の目的は？", correct:"年貢を安定して取るため農民を統制する", wrong:["農民に商売を勧めるため","武士をやめさせるため","都市へ移住させるため"]},
+    {q:"「広ク会議ヲ興シ万機公論ニ決スベシ」で始まる、新政府の基本方針は？", correct:"五箇条の御誓文", wrong:["五榜の掲示","大日本帝国憲法","教育勅語"]},
+    {q:"「天皇ハ神聖ニシテ侵スベカラズ」とある史料は？", correct:"大日本帝国憲法", wrong:["日本国憲法","五箇条の御誓文","十七条の憲法"]},
+    {q:"「日本国民は正義と秩序を基調とする国際平和を誠実に希求し…戦争を放棄する」のは何条？", correct:"日本国憲法 第9条", wrong:["大日本帝国憲法","教育勅語","五箇条の御誓文"]},
+  ],
+  /* --- 史料（応用・時代判定） --- */
+  src_adv:[
+    {q:"「口分田」「租・庸・調」の語が出る史料はどの時代か？", correct:"奈良時代（律令制）", wrong:["鎌倉時代","江戸時代","明治時代"]},
+    {q:"「御恩」「奉公」の語が示す、武士と主君の関係が成立した時代は？", correct:"鎌倉時代（封建制度）", wrong:["平安時代","室町末期","江戸後期"]},
+    {q:"「鉄砲」「南蛮」「キリスト教」が同時に出る史料の時代は？", correct:"戦国〜安土桃山時代", wrong:["奈良時代","鎌倉時代","江戸中期"]},
+    {q:"「鎖国」「出島」「オランダ・清」の語が示す対外方針の時代は？", correct:"江戸時代", wrong:["室町時代","明治時代","平安時代"]},
+    {q:"「殖産興業」「富国強兵」「文明開化」が並ぶ史料の時代は？", correct:"明治時代", wrong:["江戸時代","大正時代","昭和戦後"]},
+    {q:"「普通選挙」「治安維持法」が同じ1925年に出た。この組み合わせが示すことは？", correct:"民衆運動の拡大と、それを抑える統制が同時に進んだ", wrong:["完全な自由化","鎖国の開始","武士の復活"]},
+  ],
+  /* --- 宗教思想 基礎 --- */
+  rel_basic:[
+    {q:"6世紀、日本に仏教を伝えたとされる国は？", correct:"百済（朝鮮半島）", wrong:["唐","インド","ポルトガル"]},
+    {q:"真言宗を開き、高野山に金剛峯寺を建てた僧は？", correct:"空海", wrong:["最澄","法然","親鸞"]},
+    {q:"浄土宗を開き、念仏（南無阿弥陀仏）を説いた僧は？", correct:"法然", wrong:["日蓮","栄西","道元"]},
+    {q:"1549年、キリスト教を日本に伝えた宣教師は？", correct:"フランシスコ・ザビエル", wrong:["ペリー","ハリス","シーボルト"]},
+    {q:"江戸幕府がキリスト教禁止のために人々を寺に所属させた制度は？", correct:"寺請制度", wrong:["惣村制度","五人組","参勤交代"]},
+    {q:"浄土真宗（一向宗）の信者が各地で起こした一揆は？", correct:"一向一揆", wrong:["土一揆","国一揆","打ちこわし"]},
+  ],
+  /* --- 宗教思想 応用 --- */
+  rel_adv:[
+    {q:"鎌倉新仏教で、浄土真宗を開いた僧は？", correct:"親鸞", wrong:["法然","日蓮","一遍"]},
+    {q:"座禅によって悟りを得るとし、曹洞宗を開いた僧は？", correct:"道元", wrong:["栄西","親鸞","日蓮"]},
+    {q:"『立正安国論』を著し、法華経を重んじた僧は？", correct:"日蓮", wrong:["法然","空海","最澄"]},
+    {q:"江戸時代、武士の学問として幕府が奨励した儒学の一派は？", correct:"朱子学", wrong:["国学","蘭学","陽明学のみ"]},
+    {q:"幕末、尊王攘夷運動の理論的支柱となった学問は？", correct:"水戸学・国学", wrong:["蘭学","朱子学のみ","洋学"]},
+    {q:"明治初期、神道を国家の中心に置こうとして一時仏教が排斥された動きは？", correct:"廃仏毀釈", wrong:["文明開化","殖産興業","国家総動員"]},
+  ],
+  /* --- 混合（やさしい・基本技用） --- */
+  mixed_easy:[
+    {q:"鎌倉・室町・江戸、最も古い幕府は？", correct:"鎌倉幕府", wrong:["室町幕府","江戸幕府","どれも同じ"]},
+    {q:"「大化の改新」が始まった年は？", correct:"645年", wrong:["794年","1192年","1603年"]},
+    {q:"平安京に都が移された年は？", correct:"794年", wrong:["710年","645年","1185年"]},
+    {q:"武士が初めて政権を握った、平清盛の一族は？", correct:"平氏", wrong:["源氏","北条氏","足利氏"]},
+    {q:"明治維新で江戸は何と改称された？", correct:"東京", wrong:["京都","大阪","横浜"]},
+    {q:"元号が『令和』の前は？", correct:"平成", wrong:["昭和","大正","明治"]},
+  ],
+
+  /* ============================================================
+     四天王・博士・Administrator専用: 入試級のディープな問題
+     ①因果・考察型 ②史料読解 ③正誤・史実判定
+     ============================================================ */
+  /* 政治: 因果・考察 */
+  hard_acid:[
+    {q:"墾田永年私財法(743)が、律令制の土地制度（公地公民）をくずす結果になった理由は？", correct:"開墾地の私有が認められ、有力者が私有地(荘園)を広げたから", wrong:["口分田が増えて班田が徹底されたから","農民が土地を捨てたから","税が廃止されたから"]},
+    {q:"承久の乱(1221)で幕府が勝った結果、西国に広がったものは？", correct:"幕府の支配（地頭の設置が全国化し、朝廷が幕府に従う構図が固まった）", wrong:["朝廷の権威の回復","荘園の消滅","武士身分の廃止"]},
+    {q:"応仁の乱が「下剋上」の時代を招いたと言えるのはなぜか？", correct:"幕府・守護の権威が失墜し、実力ある者が上位者にとって代わる風潮が広がったから", wrong:["天皇が全国を直接支配したから","武士が農民になったから","貿易が止まったから"]},
+    {q:"江戸幕府が参勤交代を制度化した主なねらいは？", correct:"大名に多大な出費をさせ、幕府への反抗力をそぐこと", wrong:["大名の収入を増やすこと","外国との貿易を活発にすること","農民を保護すること"]},
+    {q:"廃藩置県が版籍奉還より徹底した中央集権といえる理由は？", correct:"藩を廃して県を置き、政府が任命した官吏に統治させたから（旧大名の支配を断ち切った）", wrong:["藩主がそのまま知事になったから","藩の軍隊が残ったから","年貢が据え置かれたから"]},
+  ],
+  /* 外交: 因果・考察 */
+  hard_base:[
+    {q:"元寇のあと御家人が幕府に不満を持った理由は？", correct:"防衛戦で新たな領地が得られず、十分な恩賞(御恩)が与えられなかったから", wrong:["元に領地を奪われたから","幕府が外国に降伏したから","貿易の利益を独占されたから"]},
+    {q:"幕末に結ばれた通商条約が「不平等」と呼ばれる具体的な中身は？", correct:"領事裁判権を認め、関税自主権がなかったこと", wrong:["領土を割譲したこと","賠償金を払ったこと","鎖国を強制されたこと"]},
+    {q:"日清戦争後の下関条約が、のちの三国干渉を招いた理由は？", correct:"遼東半島の割譲がロシアらの利害と対立したから", wrong:["賠償金がなかったから","朝鮮を清に返したから","台湾を放棄したから"]},
+    {q:"条約改正が明治政府の悲願だった理由は？", correct:"不平等条約が主権を制限し、近代国家として対等に扱われなかったから", wrong:["貿易をしたくなかったから","鎖国を続けたかったから","賠償金を得るため"]},
+    {q:"サンフランシスコ平和条約と同時に日米安全保障条約が結ばれた意味は？", correct:"独立回復と引き換えに、米軍の駐留を認め西側陣営に組み込まれたこと", wrong:["完全な中立になったこと","軍隊を全廃したこと","ソ連と同盟したこと"]},
+  ],
+  /* 社会経済: 因果・考察 */
+  hard_neutral:[
+    {q:"太閤検地と刀狩が「兵農分離」を進めたといえる理由は？", correct:"検地で農民を土地に縛り、刀狩で武装解除して、武士と農民の身分を明確に分けたから", wrong:["農民に武士の位を与えたから","武士を農業に戻したから","都市をなくしたから"]},
+    {q:"江戸時代の貨幣経済の発達が、年貢（米）に頼る武士を苦しめた理由は？", correct:"米価が上がりにくい一方、生活に必要な貨幣の支出が増えて財政が悪化したから", wrong:["米が取れなくなったから","貨幣が禁止されたから","農民が消えたから"]},
+    {q:"地租改正が政府の財政を安定させたといえる理由は？", correct:"豊凶に左右される米の年貢から、地価を基準に現金で定率課税する方式に変えたから", wrong:["税を廃止したから","米で納めさせ続けたから","地価を無視したから"]},
+    {q:"松方財政(デフレ政策)が農村に打撃を与えた理由は？", correct:"物価下落で農産物価格が下がり、定額の地租負担が重くなって土地を手放す農民が増えたから", wrong:["地租が廃止されたから","米価が急騰したから","工場がなくなったから"]},
+    {q:"戦後の農地改革が日本社会に与えた最大の変化は？", correct:"地主制が解体され、多くの小作人が自作農となったこと", wrong:["大地主が増えたこと","農業が禁止されたこと","都市人口が減ったこと"]},
+  ],
+  /* 文化: 因果・考察・判定 */
+  hard_indicator:[
+    {q:"平安中期に国風文化が生まれた背景として最も適切なのは？", correct:"遣唐使の停止などで大陸文化の直接流入が減り、日本独自の文化が発達したから", wrong:["唐との交流が最も盛んだったから","仏教が禁止されたから","武士が政治を握ったから"]},
+    {q:"元禄文化と化政文化の担い手・中心地の違いとして正しいのは？", correct:"元禄は上方(京都・大坂)の町人、化政は江戸の町人が中心", wrong:["どちらも公家が中心","元禄が江戸、化政が上方","どちらも武士が中心"]},
+    {q:"桃山文化が豪壮・華麗な特徴をもった背景は？", correct:"統一を進めた大名や豪商の富と気風を反映したから", wrong:["仏教の衰退のため","鎖国で外国文化が入ったため","貴族が没落したため"]},
+    {q:"蘭学が江戸中期以降に発達できたのはなぜか？", correct:"長崎(出島)を通じてオランダの書物・知識が限定的に入っていたから", wrong:["鎖国が解かれたから","中国文化を禁じたから","朱子学が廃止されたから"]},
+    {q:"次のうち、文化と時代の組み合わせとして誤っているのは？", correct:"天平文化 ― 江戸時代", wrong:["国風文化 ― 平安時代","東山文化 ― 室町時代","化政文化 ― 江戸時代"]},
+  ],
+  /* 史料読解: 入試級 */
+  hard_titration:[
+    {q:"史料に「御恩」と「奉公」が対で現れるとき、それが示す社会の仕組みは？", correct:"土地(御恩)を与える主君に、御家人が軍役(奉公)で報いる封建的主従関係", wrong:["貨幣で給料を払う関係","税を免除する関係","宗教による結びつき"]},
+    {q:"「租・庸・調」「口分田」が出る史料から読み取れる、負担の原則は？", correct:"戸籍に基づいて人々に土地を与え、代わりに税・労役を課した", wrong:["土地は自由売買だった","税は貨幣のみだった","武士だけが納めた"]},
+    {q:"史料「ヶ国に一円の所領を…地頭を補任す」が全国化したのはどの出来事の後か？", correct:"承久の乱の後", wrong:["大化の改新の後","応仁の乱の後","関ヶ原の戦いの前"]},
+    {q:"同じ年(1925)に成立した「普通選挙法」と「治安維持法」を併せて読むと見える、政府の姿勢は？", correct:"選挙権を広げつつ、社会運動は厳しく取り締まるという二面的な統制", wrong:["完全な言論の自由化","選挙の廃止","軍部の解体"]},
+    {q:"史料「万機公論ニ決スベシ」と、同時期の「一揆ヲ結フヘカラス」を併読して分かることは？", correct:"公論を掲げつつ、民衆の自発的結集は抑えようとした新政府の方針", wrong:["完全な民主主義の実現","旧幕府への復帰","身分制の強化のみ"]},
+  ],
+  /* 宗教思想: 因果・考察・判定 */
+  hard_ion:[
+    {q:"鎌倉新仏教が広く民衆に受け入れられた共通の理由は？", correct:"念仏・題目・座禅など、わかりやすく実践しやすい道を示したから", wrong:["厳しい戒律を課したから","朝廷が強制したから","外国語が必要だったから"]},
+    {q:"幕府が朱子学を重んじた理由として最も適切なのは？", correct:"身分の上下・主従の秩序を重んじる考えが、幕藩体制の安定に都合がよかったから", wrong:["西洋科学を導入するため","仏教を広めるため","貿易を拡大するため"]},
+    {q:"幕末に尊王攘夷論が高まった背景は？", correct:"開国による社会不安の中、国学・水戸学が天皇尊崇と排外を結びつけたから", wrong:["仏教が国教化したから","蘭学が禁止されたから","幕府が天皇を廃したから"]},
+    {q:"明治初期の神仏分離令が廃仏毀釈を招いた理由は？", correct:"神道を国家の中心に据える方針が、仏教排斥の動きを各地で生んだから", wrong:["仏教が外国の宗教だったから","寺が税を払わなかったから","僧が反乱したから"]},
+    {q:"次の僧と宗派の組み合わせで誤っているのは？", correct:"日蓮 ― 浄土真宗", wrong:["親鸞 ― 浄土真宗","道元 ― 曹洞宗","空海 ― 真言宗"]},
+  ],
+};
+
+/* 四天王・博士・Administrator が使う入試級プールへの対応(技の属性→hardプール) */
+const ELITE_HARD = {
+  acid:"hard_acid", base:"hard_base", neutral:"hard_neutral",
+  indicator:"hard_indicator", titration:"hard_titration", ion:"hard_ion"
+};
+
+/* ===== モンスター種族 =====
+   base:種族値(hp,atk,spd) / learnset:[{lv,move}] / evo:{to,lv}
+   look:見た目生成パラメータ(shape,palette)   */
+/* 日本史版: 種族キーは互換のため流用、名前は歴史テーマ。
+   acid=政治 / base=外交 / neutral=社会経済 / indicator=文化 / titration=史料 / ion=宗教思想 */
+const SPECIES = {
+  /* 政治ライン（聖徳太子→中大兄→徳川家康 をもじる） */
+  acidling:{name:"ショウトッキー", type:"acid", base:{hp:42,atk:52,spd:58}, look:{shape:"blob",pal:"acid",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"protonShot"},{lv:9,move:"phScan"},{lv:16,move:"strongAcid"}], evo:{to:"acidon",lv:16}},
+  acidon:{name:"テンジール", type:"acid", base:{hp:60,atk:72,spd:70}, look:{shape:"beast",pal:"acid",tier:2},
+    learnset:[{lv:1,move:"protonShot"},{lv:1,move:"strongAcid"},{lv:22,move:"neutralize"}], evo:{to:"acidrake",lv:32}},
+  acidrake:{name:"イエヤスドラ", type:"acid", base:{hp:82,atk:96,spd:84}, look:{shape:"dragon",pal:"acid",tier:3},
+    learnset:[{lv:1,move:"strongAcid"},{lv:1,move:"protonShot"},{lv:1,move:"neutralize"}], evo:null},
+  /* 外交ライン（北条時宗→足利義満→小村寿太郎 をもじる） */
+  baseling:{name:"トキムネン", type:"base", base:{hp:46,atk:50,spd:52}, look:{shape:"blob",pal:"base",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"hydroxide"},{lv:9,move:"phScan"},{lv:16,move:"strongBase"}], evo:{to:"baseon",lv:16}},
+  baseon:{name:"ヨシミッツ", type:"base", base:{hp:64,atk:68,spd:64}, look:{shape:"beast",pal:"base",tier:2},
+    learnset:[{lv:1,move:"hydroxide"},{lv:1,move:"strongBase"},{lv:22,move:"neutralize"}], evo:{to:"baselith",lv:32}},
+  baselith:{name:"コムランド", type:"base", base:{hp:88,atk:90,spd:78}, look:{shape:"golem",pal:"base",tier:3},
+    learnset:[{lv:1,move:"strongBase"},{lv:1,move:"hydroxide"},{lv:1,move:"neutralize"}], evo:null},
+  /* 社会経済ライン（百姓一揆→豊臣秀吉 をもじる） */
+  neuto:{name:"ヒャクッショ", type:"neutral", base:{hp:60,atk:48,spd:50}, look:{shape:"blob",pal:"neutral",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"neutralize"},{lv:12,move:"saltForm"}], evo:{to:"neuton",lv:20}},
+  neuton:{name:"ヒデヨシオ", type:"neutral", base:{hp:84,atk:66,spd:62}, look:{shape:"golem",pal:"neutral",tier:2},
+    learnset:[{lv:1,move:"neutralize"},{lv:1,move:"saltForm"},{lv:26,move:"burette"}], evo:null},
+  /* 文化ライン（紫式部→葛飾北斎 をもじる） */
+  litmon:{name:"ムラサッキ", type:"indicator", base:{hp:44,atk:54,spd:60}, look:{shape:"sprite",pal:"indicator",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"litmus"},{lv:14,move:"phenol"}], evo:{to:"phenox",lv:22}},
+  phenox:{name:"ホクサイオン", type:"indicator", base:{hp:62,atk:76,spd:82}, look:{shape:"bird",pal:"indicator",tier:2},
+    learnset:[{lv:1,move:"phenol"},{lv:1,move:"litmus"},{lv:28,move:"phScan"}], evo:null},
+  /* 史料ライン（本居宣長→杉田玄白 をもじる） */
+  buretta:{name:"ノリナガン", type:"titration", base:{hp:50,atk:56,spd:54}, look:{shape:"sprite",pal:"titration",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"burette"},{lv:14,move:"equivPoint"}], evo:{to:"titanova",lv:24}},
+  titanova:{name:"ゲンパクーザ", type:"titration", base:{hp:74,atk:82,spd:72}, look:{shape:"beast",pal:"titration",tier:2},
+    learnset:[{lv:1,move:"equivPoint"},{lv:1,move:"burette"},{lv:30,move:"neutralize"}], evo:null},
+  /* 宗教思想ライン（空海→親鸞 をもじる） */
+  ionix:{name:"クウカイン", type:"ion", base:{hp:48,atk:50,spd:66}, look:{shape:"sprite",pal:"ion",tier:1},
+    learnset:[{lv:1,move:"tackle"},{lv:1,move:"phScan"},{lv:14,move:"ionBurst"}], evo:{to:"ionlord",lv:24}},
+  ionlord:{name:"シンランガ", type:"ion", base:{hp:70,atk:78,spd:80}, look:{shape:"bird",pal:"ion",tier:2},
+    learnset:[{lv:1,move:"ionBurst"},{lv:1,move:"phScan"},{lv:30,move:"litmus"}], evo:null},
+};
+
+/* 野生出現テーブル（エリアごと）: 進行に応じて強い種が出る */
+const WILD = {
+  area1:["acidling","baseling","neuto","litmon","ionix","buretta"],         // 序盤 Lv2-6
+  area2:["acidon","baseon","litmon","buretta","ionix","neuto"],             // 中盤 Lv8-14
+  area3:["acidon","baseon","neuton","phenox","titanova","ionlord"],         // 終盤 Lv16-24
+};
+
+/* 対戦相手トレーナー（ジム/ランク）: ローカル。後でFirebaseから差し替え可能 */
+/* 日本史版: トレーナーIDは互換のため流用。名は歴史上の人物をもじる。rank3以上＝四天王(入試級の問題を出題) */
+const TRAINERS = [
+  {id:"t_lin", name:"見習い ウメッコ（紫式部）", rank:1, color:"#7fe0a0",
+   team:[{sp:"litmon",lv:8},{sp:"ionix",lv:8},{sp:"neuto",lv:9,salt:"NaCl"}],
+   intro:"年号、覚えてきた？ まずは腕試しといこう！", lose:"すごい…基礎はばっちりだね！"},
+  {id:"t_ken", name:"兵の者 ベンケン（弁慶）", rank:2, color:"#f0566e",
+   team:[{sp:"acidon",lv:14},{sp:"buretta",lv:13},{sp:"baseon",lv:14}],
+   intro:"流れでつかんでるか？ 時代の因果、見せてみろ！", lose:"ぐ…時代のつながり、よく分かってるな。"},
+  {id:"t_mai", name:"四天王・史料のムラジ（物部守屋）", rank:3, color:"#f0b73a",
+   team:[{sp:"titanova",lv:20},{sp:"phenox",lv:19},{sp:"neuton",lv:20,salt:"CH3COONa"}],
+   intro:"これは勝負であり演習。史料から『いつ・誰の・なぜ』を読み解けるか、入試級で問うわ。", lose:"見事な読解。史料は君を裏切らないわね。"},
+  {id:"t_rei", name:"四天王・因果のホウジョー（北条政子）", rank:4, color:"#4fd8c8",
+   team:[{sp:"ionlord",lv:25},{sp:"acidon",lv:24},{sp:"baselith",lv:25}],
+   intro:"『なぜそうなったか』を説明できる者だけが私に挑める。暗記では越えられぬぞ。", lose:"因果の鎖を解いたか…君は本物だ。"},
+  {id:"t_dr", name:"歴史王 ヒデヨシン（豊臣秀吉）", rank:5, color:"#9a7cf0",
+   team:[{sp:"acidrake",lv:30},{sp:"baselith",lv:30},{sp:"titanova",lv:29},{sp:"phenox",lv:29}],
+   intro:"政治・外交・社会・文化・史料・思想――全時代を修めし者よ。入試本番の試練を受けよ！", lose:"……完璧だ。君は日本史の真の理解者となった。"},
+];
+
+/* 隠しボス: 全トレーナー撃破後に出現する最強の管理者（織田信長をもじる） */
+const ADMIN_TRAINER = {
+  id:"t_admin", name:"第六天魔王 ノブナガン", rank:99, color:"#f0566e", admin:true,
+  team:[{sp:"acidrake",lv:45},{sp:"baselith",lv:45},{sp:"titanova",lv:44},{sp:"phenox",lv:44},{sp:"ionlord",lv:43},{sp:"neuton",lv:43,salt:"NH4Cl"}],
+  intro:"であえであえ！ 全時代を制したと申すか。ならば是非に及ばず――この第六天魔王ノブナガン、天下統一の最難関を授けよう！",
+  lose:"……であるか。見事なり。天下は、いまそなたのものだ。鳴かぬなら、その手で歴史を鳴かせてみせよ。"
+};
+
+const BOSS_LINES={};
+TRAINERS.forEach(t=>BOSS_LINES[t.id]={intro:t.intro,lose:t.lose});
+BOSS_LINES[ADMIN_TRAINER.id]={intro:ADMIN_TRAINER.intro,lose:ADMIN_TRAINER.lose};
+/* Administrator出現条件: CPUトレーナー全員を撃破済み */
+function adminUnlocked(){ return TRAINERS.every(t=>state.beaten.includes(t.id)); }
+
+</script>
+<script id="chemScript">
+/* =========================================================
+   中和滴定の化学モデル（純粋関数・テスト可能）
+   ・pH は電荷収支式を [H⁺] について二分法で厳密に解く（近似式の場合分けをしない）
+   ・25℃, Kw=1.0×10⁻¹⁴。強酸・強塩基は完全電離。H₂SO₄ は化学基礎の扱いで2段とも完全電離とみなす
+   ========================================================= */
+const KW=1.0e-14;
+/* 種族ごとの物質データ（酸・塩基タイプのみ）。SPECIES のキーは変えずに付与 */
+const CHEM={
+  acidling:{name:"酢酸",formula:"CH₃COOH",kind:"acid",strong:false,z:1,K:1.8e-5},
+  acidon:  {name:"塩酸",formula:"HCl",kind:"acid",strong:true,z:1},
+  acidrake:{name:"硫酸",formula:"H₂SO₄",kind:"acid",strong:true,z:2},
+  baseling:{name:"アンモニア水",formula:"NH₃",kind:"base",strong:false,z:1,K:1.8e-5},
+  baseon:  {name:"水酸化ナトリウム水溶液",formula:"NaOH",kind:"base",strong:true,z:1},
+  baselith:{name:"水酸化バリウム水溶液",formula:"Ba(OH)₂",kind:"base",strong:true,z:2}, /* Ca(OH)₂は溶解度が小さいので滴定の題材にはBa(OH)₂ */
+};
+/* 指示書どおり SPECIES[k].chem からも参照できるようにする（キー・既存フィールドは変更しない） */
+Object.keys(CHEM).forEach(k=>{ if(SPECIES[k]) SPECIES[k].chem=CHEM[k]; });
+const TIT={V0:10.00, Ct:0.100, concs:[0.050,0.080,0.100,0.120]};
+/* 指示薬: lo〜hi が変色域。colors は [酸性側, 塩基性側] */
+const INDICATORS={
+  phenol:{name:"フェノールフタレイン",lo:8.0,hi:9.8,acidCol:[255,255,255,0],baseCol:[214,36,128,0.85],desc:"pH 8.0〜9.8　無色 → 赤"},
+  mo:    {name:"メチルオレンジ",lo:3.1,hi:4.4,acidCol:[222,52,44,0.85],baseCol:[242,196,30,0.85],desc:"pH 3.1〜4.4　赤 → 黄"},
+};
+function titrant(an){return an.kind==="acid"?{name:"水酸化ナトリウム水溶液",formula:"NaOH"}:{name:"塩酸",formula:"HCl"};}
+function eqVolume(an,C0){return an.z*C0*TIT.V0/TIT.Ct;}
+/* 混合溶液の pH（一般形）。comps=[{s:物質データ(CHEM形式), mol:物質の物質量}], VmL=全体積
+   電荷収支  [H⁺] + Σ陽イオン = [OH⁻] + Σ陰イオン  を log[H⁺] について二分法で解く
+   ・強酸の陰イオン: 価数×C（Cl⁻, SO₄²⁻）/ 弱酸: C·Ka/(Ka+[H⁺])（CH₃COO⁻）
+   ・強塩基の陽イオン: 価数×C（Na⁺, Ba²⁺）/ 弱塩基: C·[H⁺]/([H⁺]+Ka)、Ka=Kw/Kb（NH₄⁺） */
+function solveMixPH(comps,VmL){
+  const L=VmL/1000;
+  const f=h=>{let pos=h,neg=KW/h;
+    for(const c of comps){ if(!c.mol)continue; const C=c.mol/L, s=c.s;
+      if(s.kind==="acid") neg+= s.strong? s.z*C : C*s.K/(s.K+h);
+      else if(s.kind==="base"){ const Ka=KW/(s.K||1); pos+= s.strong? s.z*C : C*h/(h+Ka); } }
+    return pos-neg;};
+  let lo=-16,hi=1;
+  for(let i=0;i<80;i++){const mid=(lo+hi)/2; if(f(Math.pow(10,mid))>0)hi=mid; else lo=mid;}
+  return -(lo+hi)/2;
+}
+/* 滴下量 v(mL) のときの pH（捕獲ミニゲーム用。滴定剤は 0.100 mol/L の NaOH / HCl） */
+function solvePH(an,C0,v){
+  const tr=an.kind==="acid"?CHEM.baseon:CHEM.acidon;
+  return solveMixPH([{s:an,mol:C0*TIT.V0/1000},{s:tr,mol:TIT.Ct*v/1000}],TIT.V0+v);
+}
+/* 指示薬の色（pHから連続補間） → "rgba(...)" */
+function indicatorRGBA(ind,pH){
+  const t=clamp01((pH-ind.lo)/(ind.hi-ind.lo));
+  const a=ind.acidCol,b=ind.baseCol;
+  // メチルオレンジは赤→橙→黄に見えるよう、そのまま線形補間で橙を通る
+  const c=a.map((x,i)=>x+(b[i]-x)*t);
+  return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${c[3].toFixed(3)})`;
+}
+function clamp01(x){return Math.max(0,Math.min(1,x));}
+/* 滴定の進行方向に見た変色の「始まり」「終わり」の体積(mL)。pH が単調なので二分法 */
+function colorChangeVolumes(an,C0,ind){
+  const up=an.kind==="acid";               // 酸を滴定 → pH は上がる
+  const startPH= up?ind.lo:ind.hi, endPH= up?ind.hi:ind.lo;
+  const vAt=target=>{ let a=0,b=eqVolume(an,C0)*3;
+    const g=v=>up? solvePH(an,C0,v)-target : target-solvePH(an,C0,v);
+    if(g(a)>=0)return 0; // 最初から変色域を超えている
+    for(let i=0;i<60;i++){const m=(a+b)/2; if(g(m)>=0)b=m; else a=m;}
+    return (a+b)/2; };
+  return {begin:vAt(startPH), end:vAt(endPH)};
+}
+/* 許容幅(mL): 中和点の体積に対する割合。最大4%（NH₃×フェノールフタレインの誤差≈5.2%を確実に失敗させる上限） */
+function titTolerance(Veq,hpRatio){return Veq*(0.02+0.02*(1-clamp01(hpRatio)));}
+function liquidity(pH){return pH<6.5?"酸性":(pH>7.5?"塩基性":"中性");}
+/* 成否判定（純粋関数）。v=止めた体積(mL), hpRatio=相手HP/最大HP
+   ・near : |v−Veq| ≤ 許容幅
+   ・indOK: 指示薬の変色（始まり or 終わり）が中和点の最大許容幅(4%)以内で起こるか。
+            化学計算から求めるだけで、種族や指示薬の組み合わせを名指しした特別扱いはしない。
+            不適切な指示薬では色で終点を判断できないので、偶然 Veq 付近で止めても成功にしない。 */
+function titrationJudge(an,C0,indKey,v,hpRatio){
+  const ind=INDICATORS[indKey], Veq=Math.round(eqVolume(an,C0)*100)/100;
+  const tol=titTolerance(Veq,hpRatio), err=v-Veq, near=Math.abs(err)<=tol+1e-9;
+  const cv=colorChangeVolumes(an,C0,ind), tmax=titTolerance(Veq,0);
+  const indOK=Math.abs(cv.begin-Veq)<=tmax||Math.abs(cv.end-Veq)<=tmax;
+  return {ok:near&&indOK,near,indOK,err,tol,Veq,cv,eqPH:solvePH(an,C0,Veq)};
+}
+
+/* =========================================================
+   中和道場（設計: docs/design-neutralization-battle.md）
+   ========================================================= */
+/* ビーカーに入る物質。化学データは CHEM と共有。sp は見た目に使う種族 */
+const SUBST={
+  HCl:{c:CHEM.acidon,sp:"acidon"}, H2SO4:{c:CHEM.acidrake,sp:"acidrake"}, CH3COOH:{c:CHEM.acidling,sp:"acidling"},
+  NaOH:{c:CHEM.baseon,sp:"baseon"}, BaOH2:{c:CHEM.baselith,sp:"baselith"}, NH3:{c:CHEM.baseling,sp:"baseling"},
+  NaCl:{c:{name:"食塩水",formula:"NaCl",kind:"salt"},sp:"neuto"},
+};
+/* 標準液（ビュレットに入れるのは強い酸・塩基だけ） */
+const STD={
+  NaOH:{s:CHEM.baseon,C:0.10,label:"0.10 mol/L 水酸化ナトリウム水溶液 NaOH",short:"NaOH"},
+  HCl: {s:CHEM.acidon,C:0.10,label:"0.10 mol/L 塩酸 HCl",short:"HCl"},
+};
+const BURET_MAX=25.00, DOJO_DMG=0.05;
+/* 中和でできる塩（段5） */
+const SALT_OF={CH3COOH:"CH3COONa",NH3:"NH4Cl",HCl:"NaCl",H2SO4:"Na2SO4"};
+/* 段の定義（本番は固定問題）。show: conc=濃度を見せる / amount=物質量を見せる / ph="live"|"init"|false */
+/* ===== 年代整序道場: 出来事を古い順に並べる =====
+   各段 events=[{t:"出来事", y:並べ替え用の基準(年や順序)}] を正しい時系列(yの昇順)に並べられたらクリア。
+   本番は固定、練習(seqに練習ボタン)はシャッフル違い。 */
+const DOJO_STAGES=[
+  {no:1,title:"古代の流れ",unit:"飛鳥〜平安",goal:"古代の出来事を古い順に並べよう。",
+   events:[{t:"十七条の憲法が定められる",y:604},{t:"大化の改新が始まる",y:645},{t:"平城京に都が移る",y:710},{t:"平安京に都が移る",y:794}]},
+  {no:2,title:"武士の登場",unit:"院政〜鎌倉",goal:"武士が台頭する流れを古い順に。",
+   events:[{t:"保元の乱",y:1156},{t:"平清盛が太政大臣になる",y:1167},{t:"源頼朝が鎌倉幕府を開く",y:1185},{t:"承久の乱",y:1221}]},
+  {no:3,title:"中世の動乱",unit:"鎌倉末〜戦国",goal:"中世の争乱を古い順に並べよう。",
+   events:[{t:"元寇（文永の役）",y:1274},{t:"建武の新政",y:1334},{t:"応仁の乱が始まる",y:1467},{t:"鉄砲が種子島に伝わる",y:1543}]},
+  {no:4,title:"天下統一と江戸",unit:"安土桃山〜江戸",goal:"統一から幕府成立の流れを。",
+   events:[{t:"織田信長が室町幕府を滅ぼす",y:1573},{t:"豊臣秀吉が全国を統一",y:1590},{t:"関ヶ原の戦い",y:1600},{t:"徳川家康が江戸幕府を開く",y:1603}]},
+  {no:5,title:"近代への転換",unit:"幕末〜明治",goal:"開国から近代国家へ。古い順に。",
+   events:[{t:"ペリーが浦賀に来航",y:1853},{t:"大政奉還",y:1867},{t:"廃藩置県",y:1871},{t:"大日本帝国憲法の発布",y:1889}]},
+  {no:6,title:"近現代の歩み",unit:"明治末〜戦後",goal:"近現代の出来事を古い順に。",
+   events:[{t:"日露戦争が始まる",y:1904},{t:"第一次世界大戦に参戦",y:1914},{t:"満州事変",y:1931},{t:"日本国憲法の施行",y:1947}]},
+];
+/* 数値の表記 */
+function sig2(x){return Number(x).toPrecision(2);}                         // 0.050 / 0.10 / 0.12
+function sci(x,sig){sig=sig||2; if(!x)return "0"; let e=Math.floor(Math.log10(Math.abs(x))+1e-9);
+  let m=Math.round(x/Math.pow(10,e)*Math.pow(10,sig-1))/Math.pow(10,sig-1); if(Math.abs(m)>=10){m/=10;e++;}
+  return m.toFixed(sig-1)+(e===0?"":"×10"+sup(e));}
+/* 段4: pH で指定された強酸の濃度 */
+function specConc(sp){const s=SUBST[sp.sub].c; return sp.pH!=null? Math.pow(10,-sp.pH)/s.z : sp.C;}
+/* ビーカーの状態: comps と体積。net = 残っている酸の当量(mol)。正=酸性側、負=塩基性側 */
+function makeBeaker(sp){const S=SUBST[sp.sub],C=specConc(sp);
+  const b={spec:sp,sub:sp.sub,s:S.c,V:sp.V,comps:S.c.kind==="salt"?[]:[{s:S.c,mol:C*sp.V/1000}],pours:[]};
+  b.net0=beakerNet(b); b.n0=Math.abs(b.net0); b.tol=b.n0>0?0.02*b.n0:2e-5; return b;}
+function beakerNet(b){let n=0;for(const c of b.comps){ if(c.s.kind==="acid")n+=c.s.z*c.mol; else if(c.s.kind==="base")n-=c.s.z*c.mol; }return n;}
+function beakerPH(b){return solveMixPH(b.comps,b.V);}
+function pourInto(b,stdKey,v){const st=STD[stdKey];const mol=st.C*v/1000;b.comps.push({s:st.s,mol});b.V+=v;b.pours.push({std:stdKey,v});return mol*st.s.z;}
+/* 判定: done=中和完了 / exact=ぴったり(0.5%以内) / side=残りの液性 */
+function beakerState(b){const net=beakerNet(b);
+  const done=Math.abs(net)<=b.tol+1e-12, exact=b.n0>0?Math.abs(net)<=0.005*b.n0+1e-12:Math.abs(net)<=1e-12;
+  const side=done?"neutral":(net>0?"acid":"base");
+  const flipped=b.net0!==0&&!done&&Math.sign(net)!==Math.sign(b.net0);
+  return {net,done,exact,side,flipped};}
+/* 正しい標準液と必要量 */
+function dojoAnswer(sp){const S=SUBST[sp.sub].c; if(S.kind==="salt")return null;
+  const std=S.kind==="acid"?"NaOH":"HCl", st=STD[std], n=S.z*specConc(sp)*sp.V/1000;
+  return {std,n,v:Math.round(n/(st.C*st.s.z)*1000*1e6)/1e6};}
+/* 計算の手順（ゲーム内のまとめ画面と、先生用の解答一覧で共通） */
+function dojoSteps(sp){const S=SUBST[sp.sub].c; if(S.kind==="salt")return ["食塩水（NaCl）は中性。中和する必要はない。"];
+  const a=dojoAnswer(sp), st=STD[a.std], ion=S.kind==="acid"?"H⁺":"OH⁻", ion2=S.kind==="acid"?"OH⁻":"H⁺";
+  const kindJ=S.kind==="acid"?"酸":"塩基", L=sp.V/1000, lines=[];
+  if(sp.phShown!=null){ const pOH=14-sp.phShown;
+    lines.push(`pH ＝ ${sp.phShown} だから [H⁺] ＝ 1.0×10${sup(-sp.phShown)} mol/L。`);
+    lines.push(`水のイオン積 [H⁺][OH⁻] ＝ 1.0×10${sup(-14)} (mol/L)² より、[OH⁻] ＝ 1.0×10${sup(-pOH)} mol/L（強塩基なのでこれが ${S.formula} の濃度）。`);
+    lines.push(`OH⁻ の物質量 ＝ 1.0×10${sup(-pOH)} mol/L × ${sp.V.toFixed(1)}/1000 L ＝ ${sci(a.n)} mol`);
+  }else if(sp.pH!=null){
+    lines.push(`pH ＝ ${sp.pH} だから [H⁺] ＝ 1.0×10${sup(-sp.pH)} mol/L（強酸はすべて電離している）。`);
+    if(S.z===2) lines.push(`${S.formula} は2価の酸だが、[H⁺] は「電離して出てきた H⁺」の濃度なので、2価の分はすでに含まれている。ここで2倍しない。`);
+    lines.push(`H⁺ の物質量 ＝ 1.0×10${sup(-sp.pH)} mol/L × ${sp.V.toFixed(1)}/1000 L ＝ ${sci(a.n)} mol`);
+  }else{
+    lines.push(`${S.name.replace(/水溶液$|水$/,"")} ${S.formula} は ${S.z}価の${S.strong?"強":"弱"}${kindJ}。`);
+    lines.push(`${ion} の物質量${S.strong?"":"（中和で反応できる量）"} ＝ ${S.z} × ${sig2(sp.C)} mol/L × ${sp.V.toFixed(1)}/1000 L ＝ ${sci(a.n)} mol`);
+    if(!S.strong) lines.push(`弱${kindJ}は一部しか電離していないが、中和が進むと残りも次々に電離して反応する。だから中和に必要な量は、強${kindJ}と同じく「価数 × 物質量」で決まる。`);
+  }
+  lines.push(`${ion2} を出す ${st.label}（1価）で中和する。必要な体積 ＝ ${sci(a.n)} mol ÷ ${sig2(st.C)} mol/L ＝ ${sci(a.v/1000)} L ＝ ${a.v.toFixed(2)} mL`);
+  return lines;}
+/* 中和点（ちょうど中和したとき）の pH */
+function dojoEqPH(sp){const a=dojoAnswer(sp); if(!a)return 7; const b=makeBeaker(sp); pourInto(b,a.std,a.v); return beakerPH(b);}
+/* BTB の色（黄 6.0 → 緑 6.8 → 青 7.6） */
+function btbRGBA(pH){const Y=[236,200,40],G=[60,180,90],Bl=[40,100,220];
+  const lerp=(a,b,t)=>a.map((x,i)=>Math.round(x+(b[i]-x)*t));
+  const c=pH<=6.8?lerp(Y,G,clamp01((pH-6.0)/0.8)):lerp(G,Bl,clamp01((pH-6.8)/0.8));
+  return `rgba(${c[0]},${c[1]},${c[2]},0.8)`;}
+function liqOf(pH){return pH<6.5?"acid":(pH>7.5?"base":"neutral");}
+/* 練習問題（段2〜4）。rnd は 0〜1 の乱数関数 */
+function dojoPractice(no,rnd){const pk=a=>a[Math.floor(rnd()*a.length)];
+  const ok=sp=>{const a=dojoAnswer(sp);return a&&a.v<=BURET_MAX&&Math.abs(a.v*20-Math.round(a.v*20))<1e-6&&a.v>=1;};
+  const one=gen=>{for(let i=0;i<200;i++){const sp=gen();if(ok(sp))return sp;}return null;};
+  let list=[];
+  if(no===2) for(let i=0;i<3;i++) list.push(one(()=>{const sub=pk(["HCl","H2SO4","NaOH","BaOH2"]);
+    return {sub,C:pk(sub==="BaOH2"?[0.020,0.050,0.10]:[0.050,0.10,0.20]),V:pk([5.0,10.0,15.0,20.0,25.0])};}));
+  if(no===3){const C=pk([0.050,0.10,0.20]),V=pk([5.0,10.0,15.0,20.0]);
+    list=[{sub:"HCl",C,V},{sub:"CH3COOH",C,V},{sub:pk(["NH3","NaOH"]),C,V}].map(sp=>ok(sp)?sp:one(()=>({sub:sp.sub,C:0.10,V:10.0})));}
+  if(no===4) for(let i=0;i<3;i++) list.push(i<2? one(()=>{const pH=pk([1,2]);return {sub:pk(["HCl","H2SO4"]),pH,V:pH===1?pk([5.0,10.0,15.0,20.0,25.0]):pk([50.0,100.0,150.0,200.0])};})
+    : one(()=>{const pH=pk([12,13]);return {sub:"NaOH",pH:null,pOHHint:14-pH,phShown:pH,C:Math.pow(10,pH-14),V:pH===13?pk([5.0,10.0,20.0]):pk([50.0,100.0,200.0])};}));
+  return list.filter(Boolean);}
+</script>
+<script id="artScript">
+/* =========================================================
+   モンスターSVG生成器
+   見た目 = シェイプ × ティア × パレット × 種シード
+   ・shape: blob/beast/dragon/golem/sprite/bird
+   ・pal:   acid/base/neutral/indicator/titration/ion（2色＋アクセント）
+   ・tier:  1-3（大きさ・装飾・オーラ）
+   ・seed:  種ごとに目・模様・角などを決定論的に変える
+   差し替え: MON_IMG[speciesKey]=URL でき絵を上書き可能
+   ========================================================= */
+const MON_IMG={};
+const PALS={
+  acid:      {a:"#f0566e", b:"#ff8aa0", c:"#ffd0d8", eye:"#3a0a12"},
+  base:      {a:"#4a8af0", b:"#7fb0ff", c:"#cfe0ff", eye:"#07122e"},
+  neutral:   {a:"#7fe0a0", b:"#a8f0c0", c:"#d8ffe6", eye:"#0a2e1a"},
+  indicator: {a:"#c77cf0", b:"#d9a8f7", c:"#efd8ff", eye:"#2a0a3a"},
+  titration: {a:"#f0b73a", b:"#ffd47a", c:"#ffeec0", eye:"#3a2a07"},
+  ion:       {a:"#4fd8c8", b:"#8aeae0", c:"#d0fff8", eye:"#07302c"},
+};
+/* 文字列→数値シード（決定論） */
+function seedOf(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+/* シードから0..n-1 */
+function sPick(seed,salt,n){return ((seed>>>salt)%n);}
+
+/* 目のバリエーション */
+function eyes(p,seed,cx,cy,sp){
+  const t=sPick(seed,3,4);
+  const E=p.eye;
+  if(t===0)return `<circle cx="${cx-sp}" cy="${cy}" r="2.4" fill="#fff"/><circle cx="${cx+sp}" cy="${cy}" r="2.4" fill="#fff"/><circle cx="${cx-sp}" cy="${cy}" r="1.2" fill="${E}"/><circle cx="${cx+sp}" cy="${cy}" r="1.2" fill="${E}"/>`;
+  if(t===1)return `<circle cx="${cx-sp}" cy="${cy}" r="1.7" fill="${E}"/><circle cx="${cx+sp}" cy="${cy}" r="1.7" fill="${E}"/>`;
+  if(t===2)return `<path d="M${cx-sp-2} ${cy} q2 -3 4 0" stroke="${E}" stroke-width="1.5" fill="none"/><path d="M${cx+sp-2} ${cy} q2 -3 4 0" stroke="${E}" stroke-width="1.5" fill="none"/>`;
+  return `<ellipse cx="${cx-sp}" cy="${cy}" rx="1.4" ry="2.4" fill="${E}"/><ellipse cx="${cx+sp}" cy="${cy}" rx="1.4" ry="2.4" fill="${E}"/><circle cx="${cx-sp}" cy="${cy-0.6}" r="0.5" fill="#fff"/><circle cx="${cx+sp}" cy="${cy-0.6}" r="0.5" fill="#fff"/>`;
+}
+/* 模様（体の装飾）: シードで種類変化 */
+function pattern(p,seed,cx,cy){
+  const t=sPick(seed,7,4);
+  if(t===0)return `<circle cx="${cx}" cy="${cy+4}" r="2.2" fill="${p.c}" opacity=".7"/>`;
+  if(t===1)return `<path d="M${cx-5} ${cy+5} h10" stroke="${p.c}" stroke-width="1.6" opacity=".6"/><path d="M${cx-4} ${cy+8} h8" stroke="${p.c}" stroke-width="1.4" opacity=".5"/>`;
+  if(t===2)return `<circle cx="${cx-4}" cy="${cy+5}" r="1.3" fill="${p.c}" opacity=".7"/><circle cx="${cx+4}" cy="${cy+5}" r="1.3" fill="${p.c}" opacity=".7"/><circle cx="${cx}" cy="${cy+8}" r="1.3" fill="${p.c}" opacity=".7"/>`;
+  return `<path d="M${cx} ${cy+2} l3 5 l-6 0 z" fill="${p.c}" opacity=".6"/>`;
+}
+/* オーラ（ティア3） */
+function aura(p,tier){ if(tier<3)return ""; return `<circle cx="20" cy="20" r="18.2" fill="none" stroke="${p.b}" stroke-width="1" stroke-dasharray="1.5 3.5" stroke-linecap="round"/>`; }
+
+/* === シェイプ別 === */
+function shBlob(p,seed,tier){const wob=sPick(seed,5,3);
+  const body=`M20 ${9+wob} C${11-wob} ${9+wob} 8 18 8 23 C8 30 13 34 20 34 C27 34 32 30 32 23 C32 18 ${29+wob} ${9+wob} 20 ${9+wob} Z`;
+  return `${aura(p,tier)}<ellipse cx="20" cy="35" rx="9" ry="2" fill="rgba(0,0,0,.3)"/>
+   <path d="${body}" fill="${p.a}"/><path d="${body}" fill="url(#gg)"/>
+   <ellipse cx="20" cy="18" rx="9" ry="6" fill="${p.b}" opacity=".5"/>
+   ${pattern(p,seed,20,18)}${eyes(p,seed,20,19,4)}
+   <path d="M17 25 q3 2 6 0" stroke="${p.eye}" stroke-width="1.2" fill="none"/>`;}
+function shBeast(p,seed,tier){const ear=sPick(seed,9,2);
+  const earL=ear?`<path d="M11 12 L8 4 L15 10 Z" fill="${p.a}"/><path d="M29 12 L32 4 L25 10 Z" fill="${p.a}"/>`
+                 :`<circle cx="11" cy="9" r="3" fill="${p.a}"/><circle cx="29" cy="9" r="3" fill="${p.a}"/>`;
+  return `${aura(p,tier)}<ellipse cx="20" cy="36" rx="10" ry="2" fill="rgba(0,0,0,.3)"/>
+   ${earL}<ellipse cx="20" cy="22" rx="12" ry="11" fill="${p.a}"/><ellipse cx="20" cy="22" rx="12" ry="11" fill="url(#gg)"/>
+   <ellipse cx="20" cy="24" rx="7" ry="6" fill="${p.b}" opacity=".55"/>
+   ${pattern(p,seed,20,20)}${eyes(p,seed,20,20,5)}
+   <path d="M16 27 q4 3 8 0" stroke="${p.eye}" stroke-width="1.3" fill="none"/>
+   <path d="M20 23 l-2 3 h4 z" fill="${p.eye}"/>
+   <path d="M9 30 l-3 4 M31 30 l3 4" stroke="${p.a}" stroke-width="2.5" stroke-linecap="round"/>`;}
+function shDragon(p,seed,tier){
+  return `${aura(p,tier)}<ellipse cx="20" cy="36" rx="10" ry="2" fill="rgba(0,0,0,.3)"/>
+   <path d="M6 20 Q2 14 7 12 Q6 18 11 19 Z" fill="${p.b}"/><path d="M34 20 Q38 14 33 12 Q34 18 29 19 Z" fill="${p.b}"/>
+   <path d="M20 6 L17 11 L23 11 Z" fill="${p.c}"/>
+   <ellipse cx="20" cy="22" rx="11" ry="12" fill="${p.a}"/><ellipse cx="20" cy="22" rx="11" ry="12" fill="url(#gg)"/>
+   <path d="M20 10 L16 16 h8 Z" fill="${p.b}"/>
+   <path d="M14 14 l-2 -5 l4 3 Z M26 14 l2 -5 l-4 3 Z" fill="${p.c}"/>
+   ${pattern(p,seed,20,22)}${eyes(p,seed,20,19,5)}
+   <path d="M15 26 q5 3 10 0" stroke="${p.eye}" stroke-width="1.4" fill="none"/>
+   <path d="M17 23 l-2 2 M23 23 l2 2" stroke="#fff" stroke-width="1.2"/>`;}
+function shGolem(p,seed,tier){const crack=sPick(seed,11,2);
+  return `${aura(p,tier)}<ellipse cx="20" cy="36" rx="11" ry="2" fill="rgba(0,0,0,.3)"/>
+   <rect x="8" y="10" width="24" height="24" rx="4" fill="${p.a}"/><rect x="8" y="10" width="24" height="24" rx="4" fill="url(#gg)"/>
+   <rect x="12" y="14" width="16" height="10" rx="2" fill="${p.b}" opacity=".5"/>
+   ${crack?`<path d="M14 24 l3 4 l-2 3" stroke="${p.c}" stroke-width="1" fill="none" opacity=".6"/>`:`<circle cx="14" cy="29" r="1.5" fill="${p.c}" opacity=".6"/><circle cx="26" cy="29" r="1.5" fill="${p.c}" opacity=".6"/>`}
+   ${eyes(p,seed,20,19,5)}<path d="M16 26 h8" stroke="${p.eye}" stroke-width="1.4"/>
+   <rect x="5" y="16" width="3" height="10" rx="1.5" fill="${p.a}"/><rect x="32" y="16" width="3" height="10" rx="1.5" fill="${p.a}"/>`;}
+function shSprite(p,seed,tier){const ring=sPick(seed,13,2);
+  return `${aura(p,tier)}<ellipse cx="20" cy="35" rx="7" ry="1.8" fill="rgba(0,0,0,.25)"/>
+   ${ring?`<circle cx="20" cy="20" r="13" fill="none" stroke="${p.b}" stroke-width="1" opacity=".5" stroke-dasharray="3 3"/>`:`<circle cx="20" cy="20" r="12" fill="none" stroke="${p.b}" stroke-width="1" opacity=".4"/>`}
+   <circle cx="20" cy="20" r="8" fill="${p.a}"/><circle cx="20" cy="20" r="8" fill="url(#gg)"/>
+   <circle cx="20" cy="18" r="4" fill="${p.c}" opacity=".5"/>
+   ${eyes(p,seed,20,20,3.5)}
+   <circle cx="9" cy="14" r="1.6" fill="${p.b}"/><circle cx="31" cy="14" r="1.6" fill="${p.b}"/><circle cx="12" cy="28" r="1.3" fill="${p.c}"/><circle cx="28" cy="28" r="1.3" fill="${p.c}"/>`;}
+function shBird(p,seed,tier){const tail=sPick(seed,15,2);
+  return `${aura(p,tier)}<ellipse cx="20" cy="36" rx="8" ry="2" fill="rgba(0,0,0,.3)"/>
+   <path d="M7 20 Q0 16 3 26 Q8 24 12 24 Z" fill="${p.b}"/><path d="M33 20 Q40 16 37 26 Q32 24 28 24 Z" fill="${p.b}"/>
+   ${tail?`<path d="M20 32 l-4 6 h8 Z" fill="${p.b}"/>`:`<path d="M16 33 l-2 5 M24 33 l2 5 M20 34 v5" stroke="${p.b}" stroke-width="2" stroke-linecap="round"/>`}
+   <ellipse cx="20" cy="20" rx="9" ry="11" fill="${p.a}"/><ellipse cx="20" cy="20" rx="9" ry="11" fill="url(#gg)"/>
+   <path d="M20 8 L17 4 L20 6 L23 4 Z" fill="${p.c}"/>
+   ${pattern(p,seed,20,20)}${eyes(p,seed,20,17,4)}
+   <path d="M20 21 l-3 3 h6 Z" fill="${p.c}"/>`;}
+
+const SHAPES={blob:shBlob,beast:shBeast,dragon:shDragon,golem:shGolem,sprite:shSprite,bird:shBird};
+
+/* 種(species key)から見た目を生成 */
+function monSVG(spKey){
+  if(MON_IMG[spKey])return `<img src="${MON_IMG[spKey]}" alt="">`;
+  const sp=SPECIES[spKey]; if(!sp)return "";
+  const look=sp.look||{shape:"blob",pal:"acid",tier:1};
+  const p=PALS[look.pal]||PALS.acid;
+  const seed=seedOf(spKey);
+  const draw=SHAPES[look.shape]||shBlob;
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.35)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></linearGradient></defs>
+    ${draw(p,seed,look.tier||1)}</svg>`;
+}
+/* トレーナー用アバター */
+function trainerSVG(color,noBg){return `<svg viewBox="0 0 40 46" xmlns="http://www.w3.org/2000/svg">
+  ${noBg?"":`<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6d6"/><stop offset="1" stop-color="#ffe08a"/></linearGradient></defs>
+  <rect width="40" height="46" fill="url(#tg)"/>`}<circle cx="20" cy="16" r="9" fill="#e7c8a4"/>
+  <path d="M10 15 Q10 5 20 5 Q30 5 30 15 L28 13 Q20 9 12 13 Z" fill="${color}"/>
+  <circle cx="16" cy="16" r="1.5" fill="#26304a"/><circle cx="24" cy="16" r="1.5" fill="#26304a"/>
+  <path d="M17 20 q3 2 6 0" stroke="#b07a52" stroke-width="1.2" fill="none"/>
+  <rect x="8" y="26" width="24" height="20" rx="5" fill="${color}"/><rect x="15" y="26" width="10" height="20" fill="rgba(255,255,255,.14)"/></svg>`;}
+/* 主人公 */
+function heroSVG(){return `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="16" cy="29" rx="8" ry="2.2" fill="rgba(0,0,0,.35)"/>
+  <rect x="11" y="4" width="10" height="8" rx="3" fill="#ffd9b8"/><rect x="10" y="3" width="12" height="3.6" rx="2" fill="#ff4f8b"/>
+  <rect x="12.5" y="7" width="2" height="1.5" fill="#26304a"/><rect x="17.5" y="7" width="2" height="1.5" fill="#26304a"/>
+  <rect x="9" y="12" width="14" height="12" rx="4" fill="#2f9f8f"/><rect x="14" y="12" width="4" height="12" fill="rgba(255,255,255,.18)"/>
+  <rect x="11" y="24" width="3.4" height="6" rx="1.4" fill="#26304a"/><rect x="17.6" y="24" width="3.4" height="6" rx="1.4" fill="#26304a"/>
+  <circle cx="24" cy="15" r="3" fill="#f0b73a"/><rect x="23" y="15" width="2" height="7" fill="#9fb0c8"/></svg>`;}
+function heroPortrait(){return `<svg viewBox="0 0 38 46" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="hp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6d6"/><stop offset="1" stop-color="#ffe08a"/></linearGradient></defs>
+  <rect width="38" height="46" fill="url(#hp)"/><circle cx="19" cy="15" r="9" fill="#e7c8a4"/>
+  <rect x="9" y="5" width="20" height="7" rx="3" fill="#ff4f8b"/><rect x="14" y="13" width="3" height="2" fill="#26304a"/><rect x="21" y="13" width="3" height="2" fill="#26304a"/>
+  <rect x="7" y="25" width="24" height="21" rx="5" fill="#2f9f8f"/><rect x="15" y="25" width="8" height="21" fill="rgba(255,255,255,.14)"/></svg>`;}
+
+</script>
+<script id="engineScript">
+/* =========================================================
+   酸塩基モンスターズ ― エンジン（1ファイル・ローカル保存）
+   ポケモン形式: 手持ち最大6 / 技=クイズ / 属性相性+コンボ / 育成・進化・捕獲
+   非同期対戦: トレーナー編成に挑戦（loadOpponents/saveMyTeamで後日クラウド化）
+   ========================================================= */
+function $id(i){return document.getElementById(i);}
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+/* ===== 外部データの安全化（XSS・不正データ対策） ===== */
+function escapeHtml(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function safeColor(c,def){return (typeof c==="string"&&/^#[0-9a-fA-F]{6}$/.test(c))?c:(def||"#4fd8c8");}
+function safeInt(v,min,max,def){v=Math.round(Number(v));return isFinite(v)?clamp(v,min,max):def;}
+function safeName(v){return String(v==null?"":v).slice(0,8);}
+function sanitizeTeam(team){return (Array.isArray(team)?team:[]).filter(m=>m&&typeof m.sp==="string"&&Object.prototype.hasOwnProperty.call(SPECIES,m.sp))
+  .slice(0,6).map(m=>{const o={sp:m.sp,lv:safeInt(m.lv,1,100,5)}; if(isSaltSp(m.sp))o.salt=validSalt(m.salt)?m.salt:DEFAULT_SALT; return o;});}
+function sanitizeEntry(x){ if(!x||typeof x!=="object")return null;
+  return {id:String(x.id||"").slice(0,40),name:safeName(x.name),color:safeColor(x.color),player:!!x.player,cpu:!!x.cpu,
+    team:sanitizeTeam(x.team),wins:safeInt(x.wins,0,1e6,0),losses:safeInt(x.losses,0,1e6,0),badges:safeInt(x.badges,0,99,0),registeredAt:Number(x.registeredAt)||0}; }
+function sanitizeMon(m){ if(!m||!Object.prototype.hasOwnProperty.call(SPECIES,m.sp))return null;
+  const lv=safeInt(m.lv,1,100,5); const base=makeMon(m.sp,lv);
+  const moves=(Array.isArray(m.moves)?m.moves:[]).filter(k=>Object.prototype.hasOwnProperty.call(MOVES,k)).slice(0,4);
+  base.moves=moves.length?moves:base.moves; base.exp=safeInt(m.exp,0,1e7,0); base.hp=safeInt(m.hp,0,base.maxhp,base.maxhp);
+  if(isSaltSp(m.sp)) base.salt=validSalt(m.salt)?m.salt:DEFAULT_SALT; else delete base.salt;
+  return base; }
+
+/* =========================================================
+   保存・非同期対戦のDBレイヤー
+   ・トレーナー名をキーにセーブ管理
+   ・FIREBASE_CONFIG が設定されていれば Firestore に同期、
+     未設定ならすべて localStorage で完結（授業前の試用でも壊れない）
+   ・ゲーム状態は即時にローカル保存し、クラウドへは裏で同期(fire-and-forget)
+   ========================================================= */
+const SAVE_KEY="jhmon_save_v1";
+const TEAM_KEY="jhmon_teams_v1";
+const CURNAME_KEY="jhmon_curname";
+let FB=null;
+function initFirebase(){
+  try{
+    if(typeof FIREBASE_CONFIG==="undefined" || !FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) return false;
+    if(typeof firebase==="undefined") return false;
+    if(!firebase.apps||!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    FB=firebase.firestore(); return true;
+  }catch(e){ FB=null; return false; }
+}
+function cloudOn(){ return !!FB; }
+function persist(){return {name:state.name,party:state.party,box:state.box,gold:state.gold,bag:state.bag,
+  dex:state.dex,badges:state.badges,beaten:state.beaten,wins:state.wins,losses:state.losses,flags:state.flags,area:state.area,ts:Date.now()};}
+function saveState(){
+  const data=persist();
+  try{ localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+       if(state.name)localStorage.setItem("jhmon_save_"+state.name,JSON.stringify(data));
+       if(state.name)localStorage.setItem(CURNAME_KEY,state.name); }catch(e){}
+  if(FB&&state.name){ FB.collection("jh_saves").doc(state.name).set(data).catch(()=>{}); }
+  if(state.party&&state.party.length) saveMyTeam(true);
+}
+function loadSave(){ try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;} }
+function loadSaveByName(name){ try{const s=localStorage.getItem("jhmon_save_"+name);return s?JSON.parse(s):null;}catch(e){return null;} }
+function fetchCloudSave(name,cb){ if(!FB){cb&&cb(null);return;}
+  FB.collection("jh_saves").doc(name).get().then(d=>cb&&cb(d.exists?d.data():null)).catch(()=>cb&&cb(null)); }
+function myTeamEntry(){
+  return { id:"P_"+(state.name||"trainer"), name:state.name||"トレーナー", color:"#4fd8c8", player:true,
+    team:(state.party||[]).map(m=>m.salt?{sp:m.sp,lv:m.lv,salt:m.salt}:{sp:m.sp,lv:m.lv}),
+    wins:state.wins||0, losses:state.losses||0, badges:(state.badges||[]).length, registeredAt:Date.now() };
+}
+function saveMyTeam(silent){
+  const entry=myTeamEntry();
+  try{ const all=JSON.parse(localStorage.getItem(TEAM_KEY)||"[]");
+    const i=all.findIndex(e=>e.id===entry.id); if(i>=0)all[i]=entry; else all.push(entry);
+    localStorage.setItem(TEAM_KEY,JSON.stringify(all)); }catch(e){}
+  if(FB&&state.name){ FB.collection("jh_teams").doc(state.name).set(entry).catch(()=>{}); }
+  if(!silent)toast("📋 編成『"+escapeHtml(entry.name)+"』を登録しました！");
+  return true;
+}
+let OPP_CACHE=null;
+function loadOpponents(){
+  let players=[]; try{players=JSON.parse(localStorage.getItem(TEAM_KEY)||"[]");}catch(e){}
+  players=(Array.isArray(players)?players:[]).map(sanitizeEntry).filter(p=>p&&p.team.length);
+  if(FB){ FB.collection("jh_teams").get().then(snap=>{ const arr=[];snap.forEach(d=>{const x=sanitizeEntry(d.data());if(x&&x.team.length)arr.push(x);});
+    try{localStorage.setItem(TEAM_KEY,JSON.stringify(arr));}catch(e){} OPP_CACHE=arr; }).catch(()=>{}); }
+  const base = OPP_CACHE || players;
+  return {cpu:TRAINERS, players:base.filter(p=>p.team&&p.team.length)};
+}
+function recordResult(win){ if(win)state.wins=(state.wins||0)+1; else state.losses=(state.losses||0)+1; saveState(); }
+function bumpCpuRecord(id,playerWon){
+  try{ const k="jhmon_cpurec"; const rec=JSON.parse(localStorage.getItem(k)||"{}");
+    rec[id]=rec[id]||{wins:0,losses:0};
+    if(playerWon)rec[id].losses++; else rec[id].wins++;
+    localStorage.setItem(k,JSON.stringify(rec));
+    if(FB){ const t=TRAINERS.find(t=>t.id===id); FB.collection("jh_teams").doc("CPU_"+id).set({id:"CPU_"+id,name:(t?t.name:id),
+      cpu:true,wins:rec[id].wins,losses:rec[id].losses,color:(t?t.color:"#9a7cf0")},{merge:true}).catch(()=>{}); }
+  }catch(e){}
+}
+function loadRanking(cb){
+  function localRank(){
+    let players=[]; try{players=JSON.parse(localStorage.getItem(TEAM_KEY)||"[]");}catch(e){}
+    let cpurec={}; try{cpurec=JSON.parse(localStorage.getItem("jhmon_cpurec")||"{}");}catch(e){}
+    const cpu=TRAINERS.map(t=>({name:t.name,color:t.color,cpu:true,wins:(cpurec[t.id]||{}).wins||0,losses:(cpurec[t.id]||{}).losses||0}));
+    const pl=(Array.isArray(players)?players:[]).map(sanitizeEntry).filter(p=>p&&p.player).map(p=>({name:p.name,color:p.color||"#4fd8c8",player:true,wins:p.wins||0,losses:p.losses||0,badges:p.badges||0}));
+    return [...pl,...cpu].sort((a,b)=>(b.wins-a.wins)||(a.losses-b.losses));
+  }
+  if(FB){ FB.collection("jh_teams").orderBy("wins","desc").limit(50).get().then(snap=>{
+    const arr=[];snap.forEach(d=>{const x=sanitizeEntry(d.data());if(x)arr.push(x);});
+    if(arr.length)cb(arr.map(e=>({name:e.name,color:e.color||"#4fd8c8",player:!e.cpu,cpu:!!e.cpu,wins:e.wins||0,losses:e.losses||0,badges:e.badges||0})));
+    else cb(localRank());
+  }).catch(()=>cb(localRank())); }
+  else cb(localRank());
+}
+
+/* ===== 状態 ===== */
+let state;
+function freshState(name){return{
+  name:name||"", party:[], box:[], gold:0, bag:{ball:5,potion:3,bigpotion:0},
+  dex:[], badges:[], beaten:[], wins:0, losses:0, flags:{}, area:0, px:0, py:0, started:false,
+};}
+
+/* ===== モンスター個体生成 ===== */
+function statAt(bs,lv){return Math.floor(bs*lv/50)+5;}
+function hpAt(bs,lv){return Math.floor(bs*lv/50)+lv+10;}
+function makeMon(spKey,lv,salt){
+  const sp=SPECIES[spKey];
+  const moves=[]; sp.learnset.forEach(l=>{if(l.lv<=lv&&!moves.includes(l.move))moves.push(l.move);});
+  while(moves.length>4)moves.shift();
+  const mon={sp:spKey,lv,exp:0,moves,
+    maxhp:hpAt(sp.base.hp,lv),hp:hpAt(sp.base.hp,lv),
+    atk:statAt(sp.base.atk,lv),spd:statAt(sp.base.spd,lv)};
+  if(sp.type==="neutral") mon.salt=validSalt(salt)?salt:pick(Object.keys(SALTS));
+  return mon;
+}
+function expToNext(lv){return Math.round(lv*lv*5+lv*10+15);}
+function recalcMon(m){const sp=SPECIES[m.sp];const r=m.hp/m.maxhp;
+  m.maxhp=hpAt(sp.base.hp,m.lv);m.hp=Math.max(1,Math.round(m.maxhp*r));
+  m.atk=statAt(sp.base.atk,m.lv);m.spd=statAt(sp.base.spd,m.lv);}
+function healAll(){state.party.forEach(m=>{m.hp=m.maxhp;});}
+function firstAlive(team){return team.find(m=>m.hp>0);}
+
+/* ===== 図鑑 ===== */
+function dexAdd(spKey){if(!state.dex.includes(spKey)){state.dex.push(spKey);}}
+
+/* ===== マップ（3エリア + 道場/ジム拠点） ===== */
+const TILE=34;
+let AREAS=[];
+function buildAreas(){
+  AREAS=[
+   {name:"飛鳥・奈良の原", kind:"wild", wild:"area1", lvRange:[2,6],
+    map:["##############","#............#","#..GG...GG...#","#............#","#.G..TT..G...#","#....TT......#","#............#","#..GG...GG.H.#","#............#","#.....>......#","##############"]},
+   {name:"鎌倉・室町の杜", kind:"wild", wild:"area2", lvRange:[8,14],
+    map:["##############","#.<..........#","#...GG..GG...#","#.G.......G..#","#....TT......#","#..G.TT..GG..#","#...........H#","#.GG....GG...#","#............#","#......>.....#","##############"]},
+   {name:"江戸・近代の都", kind:"wild", wild:"area3", lvRange:[16,24],
+    map:["##############","#.<..........#","#..GG...GG...#","#.G...TT..G..#","#.....TT.....#","#..GG.....GG.#","#..........H.#","#....GG......#","#.G.......G..#","#......>.....#","##############"]},
+   {name:"歴史闘技場", kind:"arena",
+    map:["##############","#.R...Z....K.#","#..A.A.A.A.A.#","#............#","#.....VV.....#","#............#","#....<..S..D.#","#............#","##############"]},
+  ];
+}
+const POS={};
+function resolvePositions(){
+  for(let ai=0;ai<AREAS.length;ai++){const A=AREAS[ai],map=A.map;let next=null,prev=null,heal=null,shop=null,reg=null,rank=null,versus=null,admin=null,dojo=null;const arenas=[];
+    for(let y=0;y<map.length;y++)for(let x=0;x<map[0].length;x++){const c=map[y][x];
+      if(c===">")next={x,y}; if(c==="<")prev={x,y}; if(c==="H")heal={x,y}; if(c==="S")shop={x,y}; if(c==="A")arenas.push({x,y}); if(c==="R")reg={x,y}; if(c==="K")rank={x,y}; if(c==="V"&&(x===0||map[y][x-1]!=="V"))versus={x,y}; if(c==="Z")admin={x,y}; if(c==="D")dojo={x,y};}
+    POS[ai]={next,prev,heal,shop,arenas,reg,rank,versus,admin,dojo};}
+}
+function startTile(ai){const A=AREAS[ai],map=A.map;
+  // プレイヤー初期位置: 入口(prev)か中央付近の空き
+  const p=POS[ai].prev; if(p){return {x:p.x,y:p.y+1<map.length&&map[p.y+1][p.x]!=="#"?p.y+1:p.y};}
+  for(let y=1;y<map.length-1;y++)for(let x=1;x<map[0].length-1;x++)if(map[y][x]==="."||map[y][x]==="G")return {x,y};
+  return {x:1,y:1};}
+
+/* ===== 地形描画 ===== */
+const world=$id("world");
+const canvas=document.createElement("canvas");
+const ctx=canvas.getContext("2d");
+let MAP,COLS,ROWS;
+function walkable(x,y){if(x<0||y<0||x>=COLS||y>=ROWS)return false;return MAP[y][x]!=="#"&&MAP[y][x]!=="T";}
+function isGrass(x,y){return MAP[y]&&MAP[y][x]==="G";}
+/* エリアごとの配色（ポップ）。index は state.area */
+const TILESET=[
+  {fa:"#bdf0a0",fb:"#b0e892",wall:"#5fb04e",wallTop:"#8bd66c",grass:"#2f9e44",tree:"#43b85a",treeTop:"#7ddc6e",out:"#7fcf62"}, // 酸の草原
+  {fa:"#a9e3b2",fb:"#9cdba6",wall:"#2f8a55",wallTop:"#4faa6e",grass:"#1c7f45",tree:"#2f9a58",treeTop:"#5cc479",out:"#3f9a62"}, // 中和の森
+  {fa:"#ece4ff",fb:"#e1d6fd",wall:"#8b79da",wallTop:"#b1a3f3",grass:"#7a55d8",tree:"#9b7cf0",treeTop:"#c9b8ff",out:"#a493e6"}, // 滴定の神殿
+  {fa:"#ffe6f0",fb:"#ffd8e7",wall:"#ff7aa8",wallTop:"#ffa9c7",grass:"#e0457f",tree:"#ff8fb6",treeTop:"#ffc3d8",out:"#ff9fc0"}, // 対戦アリーナ
+];
+const INK="#2a2350";
+function TS(){return TILESET[state.area]||TILESET[0];}
+function rr(X,Y,w,h,r){ctx.beginPath();ctx.moveTo(X+r,Y);ctx.arcTo(X+w,Y,X+w,Y+h,r);ctx.arcTo(X+w,Y+h,X,Y+h,r);ctx.arcTo(X,Y+h,X,Y,r);ctx.arcTo(X,Y,X+w,Y,r);ctx.closePath();}
+function pad(X,Y,fill,emoji,size){rr(X+3,Y+3,TILE-6,TILE-6,7);ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=INK;ctx.stroke();
+  if(emoji){ctx.fillStyle=INK;ctx.font="bold "+(size||15)+"px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(emoji,X+TILE/2,Y+TILE/2+1);}}
+function drawTile(t,X,Y,x,y){
+  const P=TS();
+  ctx.fillStyle=((x+y)%2)?P.fa:P.fb;ctx.fillRect(X,Y,TILE,TILE);
+  if(t==="#"){rr(X+1,Y+1,TILE-2,TILE-2,6);ctx.fillStyle=P.wall;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=INK;ctx.stroke();
+    rr(X+4,Y+4,TILE-8,(TILE-8)/2,4);ctx.fillStyle=P.wallTop;ctx.fill();}
+  else if(t==="G"){ctx.fillStyle=P.grass+"33";rr(X+1,Y+1,TILE-2,TILE-2,8);ctx.fill();
+    ctx.lineJoin="round";ctx.lineWidth=1.5;ctx.strokeStyle=INK;ctx.fillStyle=P.grass;
+    [[9,27],[17,22],[25,28]].forEach(([gx,gy])=>{ctx.beginPath();ctx.moveTo(X+gx-6,Y+gy);ctx.lineTo(X+gx-3,Y+gy-10);ctx.lineTo(X+gx,Y+gy-4);ctx.lineTo(X+gx+3,Y+gy-12);ctx.lineTo(X+gx+6,Y+gy);ctx.closePath();ctx.fill();ctx.stroke();});}
+  else if(t==="T"){ctx.lineWidth=2;ctx.strokeStyle=INK;rr(X+14,Y+20,6,11,2);ctx.fillStyle="#a0703c";ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(X+TILE/2,Y+14,11,0,Math.PI*2);ctx.fillStyle=P.tree;ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(X+TILE/2-3,Y+10,4.5,0,Math.PI*2);ctx.fillStyle=P.treeTop;ctx.fill();}
+  else if(t===">"||t==="<")pad(X,Y,"#ffd23f",t===">"?"▶":"◀",14);
+  else if(t==="H"){pad(X,Y,"#ffffff");ctx.fillStyle="#ff5c8a";ctx.fillRect(X+TILE/2-3,Y+9,6,TILE-18);ctx.fillRect(X+9,Y+TILE/2-3,TILE-18,6);}
+  else if(t==="S")pad(X,Y,"#ffb347","🛍",14);
+  else if(t==="A"){ctx.beginPath();ctx.arc(X+TILE/2,Y+TILE/2+6,12,0,Math.PI*2);ctx.fillStyle="#b9a6ff";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=INK;ctx.stroke();}
+  else if(t==="R")pad(X,Y,"#8fe3ef");
+  else if(t==="K")pad(X,Y,"#ffe27a");
+  else if(t==="D")pad(X,Y,"#8ef0b8");
+  else if(t==="V"){ctx.fillStyle="#ffb3cf";ctx.fillRect(X,Y+4,TILE,TILE-8);ctx.lineWidth=2;ctx.strokeStyle=INK;ctx.beginPath();ctx.moveTo(X,Y+4);ctx.lineTo(X+TILE,Y+4);ctx.moveTo(X,Y+TILE-4);ctx.lineTo(X+TILE,Y+TILE-4);ctx.stroke();}
+  else if(t==="Z"){ const on=(typeof adminUnlocked==="function")&&adminUnlocked();
+    pad(X,Y,on?"#ff4d6d":"#cfc8e6",on?"⚡":"🔒",13); }
+}
+function drawMap(){ctx.setTransform(MAPRES,0,0,MAPRES,0,0);ctx.clearRect(0,0,COLS*TILE,ROWS*TILE);for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)drawTile(MAP[y][x],x*TILE,y*TILE,x,y);}
+
+/* ===== スプライト ===== */
+const sprites={};
+function clearSprites(){for(const k in sprites){sprites[k].remove();delete sprites[k];}}
+function makeSprite(id,html,name,cls){const el=document.createElement("div");el.className="wsprite bob"+(cls?" "+cls:"");el.innerHTML=html;
+  if(name){const n=document.createElement("div");n.className="wname";n.textContent=name;el.appendChild(n);}world.appendChild(el);sprites[id]=el;return el;}
+function place(id,x,y){const el=sprites[id];if(!el)return;el.style.left=(x*TILE-1)+"px";el.style.top=(y*TILE-8)+"px";}
+function buildSprites(){clearSprites();const A=AREAS[state.area],rec=POS[state.area];
+  if(A.kind==="arena"){const opp=loadOpponents();
+    // トレーナー枠はCPU専用(バッジ・エンディング用)。順番に並べる。
+    rec.arenas.forEach((a,i)=>{const t=opp.cpu[i];if(t){const beaten=state.beaten.includes(t.id);
+      makeSprite("arena_"+i,trainerSVG(t.color||"#9a7cf0",true),(beaten?"✓ ":"")+t.name.split(" ").pop(),"trainer lblLow");place("arena_"+i,a.x,a.y);}});
+    if(rec.versus){makeSprite("versus",signSVG("#f06a9a","⚔"),"自由対戦","obj");place("versus",rec.versus.x,rec.versus.y);}
+    if(rec.admin&&adminUnlocked()){const beaten=state.beaten.includes(ADMIN_TRAINER.id);
+      makeSprite("admin",trainerSVG(ADMIN_TRAINER.color,true),(beaten?"✓ ":"⚡ ")+ADMIN_TRAINER.name,"trainer lblLow");place("admin",rec.admin.x,rec.admin.y);}
+    if(rec.shop){makeSprite("shop",shopSVG(),"補給ショップ","obj");place("shop",rec.shop.x,rec.shop.y);}
+    if(rec.reg){makeSprite("reg",signSVG("#4fd8c8","📋"),"編成登録","obj");place("reg",rec.reg.x,rec.reg.y);}
+    if(rec.rank){makeSprite("rank",signSVG("#f0c64a","🏆"),"ランキング","obj");place("rank",rec.rank.x,rec.rank.y);}
+    if(rec.dojo){makeSprite("dojo",signSVG("#1fb866","🥋"),"年代整序道場","obj lblLow");place("dojo",rec.dojo.x,rec.dojo.y);}
+  }
+  makeSprite("player",heroSVG(),null);place("player",state.px,state.py);}
+function signSVG(color,emoji){return `<svg viewBox="0 0 32 32"><rect x="14.5" y="18" width="3" height="11" rx="1" fill="#a0703c"/><rect x="5" y="5" width="22" height="15" rx="4" fill="#fff" stroke="${color}" stroke-width="2.5"/><text x="16" y="16.5" font-size="10" text-anchor="middle">${emoji}</text></svg>`;}
+function shopSVG(){return `<svg viewBox="0 0 32 32"><rect x="6" y="12" width="20" height="16" rx="2" fill="#fff4d6"/><path d="M4 13 l3 -6 h18 l3 6 z" fill="#ff7aa8"/><path d="M10 7 v6 M16 7 v6 M22 7 v6" stroke="#fff" stroke-width="2"/><rect x="9" y="17" width="6" height="11" rx="1" fill="#5cc8ff"/><rect x="18" y="17" width="5" height="5" rx="1" fill="#5cc8ff"/></svg>`;}
+
+/* ===== カメラ・ミニマップ ===== */
+/* 表示倍率 ZOOM: マップ全体がステージに収まる倍率（1〜2.4倍）。
+   収まらない小さい画面は等倍でスクロール。canvas は倍率×DPR の解像度で描いて拡大してもぼやけないようにする */
+let ZOOM=1,MAPRES=1;const CAM={x:0,y:0};
+function viewSize(){const v=$id("viewport");return {w:v.clientWidth,h:v.clientHeight};}
+function updateZoom(){const {w,h}=viewSize();if(!w||!h||!COLS)return false;
+  ZOOM=clamp(Math.min(w/(COLS*TILE),h/(ROWS*TILE)),1,2.4);
+  const res=Math.min(3,Math.ceil(ZOOM*(window.devicePixelRatio||1)*2)/2);
+  if(res!==MAPRES){MAPRES=res;return true;}return false;}
+function sizeCanvas(){canvas.width=Math.round(COLS*TILE*MAPRES);canvas.height=Math.round(ROWS*TILE*MAPRES);canvas.style.width=COLS*TILE+"px";canvas.style.height=ROWS*TILE+"px";}
+function camera(){const {w,h}=viewSize();if(!w||!h)return;const z=ZOOM,mw=COLS*TILE*z,mh=ROWS*TILE*z;
+  let cx=(state.px*TILE+TILE/2)*z-w/2,cy=(state.py*TILE+TILE/2)*z-h/2;
+  cx=mw<=w?-(w-mw)/2:clamp(cx,0,mw-w);cy=mh<=h?-(h-mh)/2:clamp(cy,0,mh-h);
+  CAM.x=cx;CAM.y=cy;world.style.transform=`translate(${-cx}px,${-cy}px) scale(${z})`;}
+/* 画面サイズが変わったとき（回転・リサイズ・バトル終了後）にマップを合わせ直す */
+function relayout(){if(!MAP||$id("viewport").style.display==="none")return;if(updateZoom()){sizeCanvas();drawMap();}camera();}
+function snapWorld(){world.classList.add("snap");requestAnimationFrame(()=>requestAnimationFrame(()=>world.classList.remove("snap")));}
+window.addEventListener("resize",()=>requestAnimationFrame(relayout));
+const mm=$id("minimap"),mmx=mm.getContext("2d");
+function drawMinimap(){if(mm.width!==COLS*8){mm.width=COLS*8;mm.height=ROWS*8;}const sx=mm.width/COLS,sy=mm.height/ROWS;mmx.clearRect(0,0,mm.width,mm.height);let c;
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const t=MAP[y][x];
+    const P=TS();c=P.fa;
+    if(t==="#")c=P.wall;else if(t==="G")c=P.grass;else if(t==="T")c=P.tree;else if(t===">"||t==="<")c="#ffd23f";else if(t==="H")c="#ff5c8a";else if(t==="A")c="#9a7cf0";else if(t==="S")c="#ffb347";else if(t==="R")c="#10b3c8";else if(t==="K")c="#ffc400";else if(t==="D")c="#1fb866";else if(t==="V")c="#ff7aa8";else if(t==="Z")c=(typeof adminUnlocked==="function"&&adminUnlocked())?"#ff4d6d":"#cfc8e6";
+    mmx.fillStyle=c;mmx.fillRect(x*sx,y*sy,Math.ceil(sx),Math.ceil(sy));}
+  mmx.fillStyle=INK;mmx.fillRect(state.px*sx-1,state.py*sy-1,Math.ceil(sx)+2,Math.ceil(sy)+2);mmx.fillStyle="#fff";mmx.fillRect(state.px*sx,state.py*sy,Math.ceil(sx),Math.ceil(sy));}
+
+/* ===== エリアロード ===== */
+function loadArea(ai){state.area=ai;const A=AREAS[ai];MAP=A.map;COLS=MAP[0].length;ROWS=MAP.length;
+  if(!canvas.parentNode)world.appendChild(canvas);
+  $id("viewport").style.background=TS().out;snapWorld();updateZoom();sizeCanvas();
+  drawMap();buildSprites();$id("areaName").textContent=A.name;drawMinimap();playMusic(A.kind==="arena"?"arena":"field");}
+
+/* ===== HUD ===== */
+function refresh(){$id("pname").textContent=state.name||"トレーナー";
+  $id("gold").textContent=state.gold;$id("badges").textContent=state.badges.length;$id("dexn").textContent=state.dex.length;
+  const lead=state.party[0];
+  if(lead){$id("leadName").textContent=SPECIES[lead.sp].name+" Lv"+lead.lv;const r=lead.hp/lead.maxhp;
+    $id("leadHp").style.width=(r*100)+"%";$id("leadHp").className="leadfill "+hpCls(r);
+    $id("leadHpTxt").textContent=lead.hp+"/"+lead.maxhp;}
+  renderPartyPanel();
+}
+function renderPartyPanel(){const el=$id("partyPanel");if(!el||!state)return;
+  el.innerHTML=state.party.map((m,i)=>{const r=m.hp/m.maxhp;return `<div class="pp ${m.hp>0?'':'ko'}">${monSVG(m.sp)}<div class="ppi"><div class="ppn"><span>${SPECIES[m.sp].name}</span><span class="sub">Lv${m.lv}</span></div><div class="hpline"><span class="${hpCls(r)}" style="width:${Math.max(0,r*100)}%"></span></div></div></div>`;}).join("");}
+const LOG_MAX=6;
+function log(msg){const L=$id("log");const d=document.createElement("div");d.className="lg";d.innerHTML=msg;L.prepend(d);
+  while(L.children.length>LOG_MAX)L.lastElementChild.remove();L.scrollTop=0;}
+function hpCls(r){return r<=0.2?"low":(r<=0.5?"mid":"");}
+
+/* ===== BGM/SFX ===== */
+let actx=null,mg=null,mTimer=null,curTrack=null,mi=0;
+function ensureAudio(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();mg=actx.createGain();mg.gain.value=state.flags.bgmOff?0:0.09;mg.connect(actx.destination);}catch(e){}}}
+function tone(f,d,type,g,dest){if(!actx)return;const o=actx.createOscillator(),gn=actx.createGain();o.type=type||"sine";o.frequency.value=f;gn.gain.setValueAtTime(0,actx.currentTime);gn.gain.linearRampToValueAtTime(g||0.12,actx.currentTime+0.01);gn.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+d);o.connect(gn);gn.connect(dest||actx.destination);o.start();o.stop(actx.currentTime+d);}
+const TRACKS={field:[523,587,659,523,784,659,587,440,494,523,659,587,523,0],
+  battle:[440,523,659,587,523,494,440,392,440,587,523,440,0],
+  arena:[330,392,494,587,494,392,330,294,330,494,392,330,0]};
+function playMusic(name){ensureAudio();if(!actx)return;if(curTrack===name&&mTimer)return;curTrack=name;clearInterval(mTimer);mi=0;const mel=TRACKS[name]||TRACKS.field;const step=name==="battle"?240:300;
+  mTimer=setInterval(()=>{if(state.flags.bgmOff)return;const f=mel[mi%mel.length];mi++;if(f>0){tone(f,step/1000*0.9,name==="battle"?"sawtooth":"sine",0.045,mg);tone(f/2,step/1000*0.9,"triangle",0.02,mg);}},step);}
+function sfx(k){ensureAudio();if(!actx||state.flags.bgmOff)return;
+  if(k==="hit"){tone(740,0.08,"sine",0.14);setTimeout(()=>tone(988,0.1,"sine",0.14),60);}
+  else if(k==="super"){[660,880,1180].forEach((f,i)=>setTimeout(()=>tone(f,0.1,"sine",0.15),i*60));}
+  else if(k==="weak"){tone(300,0.14,"sine",0.1);}
+  else if(k==="miss"){tone(170,0.2,"sawtooth",0.14);}
+  else if(k==="faint"){[400,300,200].forEach((f,i)=>setTimeout(()=>tone(f,0.16,"triangle",0.14),i*90));}
+  else if(k==="win"){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.14,"sine",0.15),i*90));}
+  else if(k==="level"){[392,523,659,880].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"triangle",0.15),i*70));}
+  else if(k==="evo"){[330,392,494,659,784].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"sine",0.14),i*120));}
+  else if(k==="catch"){[523,440,523,659].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine",0.14),i*110));}
+  else if(k==="drop"){tone(1320,0.05,"sine",0.08);}
+  else if(k==="buy"){tone(880,0.06,"sine",0.12);setTimeout(()=>tone(1175,0.08,"sine",0.12),50);}
+}
+function toggleBgm(){ensureAudio();state.flags.bgmOff=!state.flags.bgmOff;if(mg)mg.gain.value=state.flags.bgmOff?0:0.09;$id("bgmBtn").textContent=state.flags.bgmOff?"♪̸":"♪";if(!state.flags.bgmOff&&curTrack){const t=curTrack;curTrack=null;playMusic(t);}}
+
+/* ===== 会話 ===== */
+let dlg=null;
+function startDialogue(name,color,lines,onEnd){dlg={lines,idx:0,onEnd};$id("portrait").innerHTML=trainerSVG(color);$id("dlgName").textContent=name;$id("dialogue").classList.add("show");$id("dlgText").textContent=lines[0];}
+function advanceDialogue(){if(!dlg)return;dlg.idx++;if(dlg.idx>=dlg.lines.length){$id("dialogue").classList.remove("show");const cb=dlg.onEnd;dlg=null;if(cb)cb();}else $id("dlgText").textContent=dlg.lines[dlg.idx];}
+
+/* ===== 移動 ===== */
+function uiOpen(){return $id("dojo").style.display==="block"||$id("dojoMenu").classList.contains("show")||$id("menu").classList.contains("show")||$id("shop").classList.contains("show")||$id("register").classList.contains("show")||$id("ranking").classList.contains("show")||$id("versus").classList.contains("show")||$id("titlescreen").style.display!=="none"||$id("battle").style.display==="block"||$id("ending").classList.contains("show")||$id("starterModal").classList.contains("show");}
+function tryMove(dx,dy){
+  if(dlg||uiOpen())return;
+  const nx=state.px+dx,ny=state.py+dy;const A=AREAS[state.area],rec=POS[state.area];
+  // アリーナ: トレーナー/ショップ
+  if(A.kind==="arena"){
+    const ai=rec.arenas.findIndex(a=>a.x===nx&&a.y===ny);
+    if(ai>=0){const opp=loadOpponents();const t=opp.cpu[ai];if(t){challengeTrainer(t);return;}}
+    if(rec.admin&&rec.admin.x===nx&&rec.admin.y===ny){
+      if(!adminUnlocked()){toast("🔒 5人のトレーナー全員を倒すと現れる…");sfx("miss");return;}
+      challengeTrainer(ADMIN_TRAINER);return;}
+    if(rec.versus&&(rec.versus.x===nx||rec.versus.x+1===nx)&&rec.versus.y===ny){openVersus();return;}
+    if(rec.shop&&rec.shop.x===nx&&rec.shop.y===ny){openShop();return;}
+    if(rec.reg&&rec.reg.x===nx&&rec.reg.y===ny){openRegister();return;}
+    if(rec.rank&&rec.rank.x===nx&&rec.rank.y===ny){openRanking();return;}
+    if(rec.dojo&&rec.dojo.x===nx&&rec.dojo.y===ny){openDojoMenu();return;}
+  }
+  const t=(ny>=0&&ny<ROWS&&nx>=0&&nx<COLS)?MAP[ny][nx]:"#";
+  if(t===">"){changeArea(state.area+1,"prev");return;}
+  if(t==="<"){changeArea(state.area-1,"next");return;}
+  if(t==="H"){healAll();refresh();saveState();toast("✚ 手持ちが全回復した！");sfx("level");return;}
+  if(t==="S"){openShop();return;}
+  if(!walkable(nx,ny))return;
+  state.px=nx;state.py=ny;place("player",nx,ny);camera();drawMinimap();
+  // 草むらエンカウント
+  if(isGrass(nx,ny)&&Math.random()<0.18){wildEncounter();}
+}
+function changeArea(ai,entrySide){ if(ai<0||ai>=AREAS.length)return;
+  const rec=POS[ai]; const target= entrySide==="prev"?rec.prev:rec.next;
+  loadArea(ai);
+  if(target){state.px=target.x; state.py=target.y+ (target.y+1<ROWS&&MAP[target.y+1][target.x]!=="#"?1:0);}
+  else {const s=startTile(ai);state.px=s.x;state.py=s.y;}
+  if(!walkable(state.px,state.py)){const s=startTile(ai);state.px=s.x;state.py=s.y;}
+  place("player",state.px,state.py);camera();drawMinimap();refresh();saveState();
+  log('<span class="sys">▶ </span>『'+AREAS[ai].name+'』に移動した。'+(AREAS[ai].kind==="arena"?'トレーナーに挑戦しよう！':'草むらで野生モンスターに出会える。'));
+}
+
+/* ===== バトル ===== */
+let B=null; // battle state
+function wildEncounter(){
+  const A=AREAS[state.area];const key=pick2(SPECIES_WILD(A.wild));
+  const lv=ri(A.lvRange[0],A.lvRange[1]);const foe=makeMon(key,lv);
+  beginBattle({type:"wild",foe,foeTeam:[foe]});
+}
+function SPECIES_WILD(w){return WILD[w]||WILD.area1;}
+function pick2(a){return a[Math.floor(Math.random()*a.length)];}
+function challengeTrainer(t){
+  if(state.beaten.includes(t.id)){ // 再戦可
+    startDialogue(t.name,t.color||"#9a7cf0",["また挑戦だね、受けて立とう！"],()=>beginTrainerBattle(t)); return; }
+  startDialogue(t.name,t.color||"#9a7cf0",[ (BOSS_LINES[t.id]?BOSS_LINES[t.id].intro:"勝負だ！") ],()=>beginTrainerBattle(t));
+}
+function beginTrainerBattle(t){
+  const foeTeam=t.team.map(m=>makeMon(m.sp,m.lv,m.salt||DEFAULT_SALT));
+  beginBattle({type:"trainer",trainer:t,foeTeam,foe:foeTeam[0]});
+}
+function beginBattle(cfg){
+  if(!firstAlive(state.party)){toast("戦えるモンスターがいない！回復所(✚)へ");return;}
+  B={...cfg, myIdx:state.party.findIndex(m=>m.hp>0), turn:0, usedQ:[], combo:0, curQ:null, awaitMove:true, caught:false};
+  dexAdd(B.foe.sp);
+  stopWalk();stopHold();
+  $id("viewport").style.display="none";$id("battle").style.display="block";$id("app").classList.add("battling");$id("battle").scrollTop=0;
+  ["foeArt","myArt"].forEach(k=>{$id(k).dataset.sp="";});
+  $id("battle").classList.toggle("trainer",cfg.type==="trainer");
+  playMusic("battle");renderBattle();
+  const foeName=SPECIES[B.foe.sp].name;
+  log('<span class="sys">⚔ </span>'+(cfg.type==="trainer"?(escapeHtml(cfg.trainer.name)+'が勝負を仕掛けてきた！'):('野生の'+foeName+'が現れた！')));
+  showMoveMenu();
+}
+function myMon(){return state.party[B.myIdx];}
+function renderBattle(){
+  const foe=B.foe,my=myMon();
+  $id("foeName").textContent=SPECIES[foe.sp].name;
+  $id("foeLv").textContent="Lv"+foe.lv+(foe.salt?"　"+saltLabel(foe.salt,false):"");
+  $id("foeType").innerHTML=typeBadge(SPECIES[foe.sp].type);
+  setArt("foeArt",foe.sp);
+  setHp("foeHp",foe.hp/foe.maxhp);
+  $id("myName").textContent=SPECIES[my.sp].name;
+  $id("myLv").textContent="Lv"+my.lv+(my.salt?"　"+saltLabel(my.salt,true):"");
+  $id("myType").innerHTML=typeBadge(SPECIES[my.sp].type);
+  setArt("myArt",my.sp);
+  setHp("myHp",my.hp/my.maxhp);
+  $id("myHpTxt").textContent=my.hp+"/"+my.maxhp;
+  $id("myExp").style.width=(my.exp/expToNext(my.lv)*100)+"%";
+  $id("comboTag").textContent=B.combo>=2?("🔥"+B.combo+"コンボ"):"";
+  renderPartyPanel();
+  // 控え表示
+  $id("partyDots").innerHTML=state.party.map((m,i)=>`<span class="pdot ${m.hp>0?'':'ko'} ${i===B.myIdx?'cur':''}" title="${SPECIES[m.sp].name}"></span>`).join("");
+}
+function setArt(id,sp){const el=$id(id);if(el.dataset.sp===sp)return;el.dataset.sp=sp;el.innerHTML=monSVG(sp);
+  el.classList.remove("enter");void el.offsetWidth;el.classList.add("enter");}
+function setHp(id,r){const el=$id(id);r=Math.max(0,r);el.style.width=(r*100)+"%";el.className=hpCls(r);}
+/* ダメージ数字のポップアップ */
+function popDmg(id,text,kind){const host=$id(id);if(!host)return;const s=document.createElement("span");s.className="dmgPop "+(kind||"");s.textContent=text;host.appendChild(s);setTimeout(()=>s.remove(),950);}
+function typeBadge(tp){const T=TYPES[tp]||TYPES.normal;return `<span class="tbadge" style="--tc:${T.color}">${T.name}</span>`;}
+function showMoveMenu(){
+  if(!B)return;
+  B.awaitMove=true;const my=myMon();const acts=$id("battleMenu");acts.innerHTML="";
+  my.moves.forEach(mk=>{const mv=MOVES[mk];const b=document.createElement("button");b.className="mvBtn";
+    const et=moveTypeFor(mv,my), tn=TYPES[mv.type].name+(et!==mv.type?"→"+TYPES[et].name+"として":"");
+    b.style.setProperty("--tc",TYPES[et].color);
+    b.innerHTML=`<b>${mv.name}</b><span class="mvmeta">${tn}・威力${mv.power}</span>`;
+    b.onclick=()=>useMove(mk);acts.appendChild(b);});
+  // コマンド
+  const row=document.createElement("div");row.className="cmdRow";
+  const bag=document.createElement("button");bag.className="cmdBtn";bag.textContent="🎒 道具";bag.onclick=()=>showBag();
+  /* onclick に showSwitch を直接渡すとクリックイベントが forced 扱いになり「戻る」が出ずに固まるので、明示的に false を渡す。
+     交代できる仲間がいなければボタン自体を押せなくする */
+  const canSwitch=state.party.some((m,i)=>m.hp>0&&i!==B.myIdx);
+  const sw=document.createElement("button");sw.className="cmdBtn";sw.textContent="🔄 交代";sw.onclick=()=>showSwitch(false);sw.disabled=!canSwitch;
+  if(!canSwitch)sw.title="交代できる仲間がいない";
+  const run=document.createElement("button");run.className="cmdBtn";run.textContent=B.type==="wild"?"🏃 逃げる":"―";if(B.type==="wild")run.onclick=tryRun;else run.disabled=true;
+  row.appendChild(bag);row.appendChild(sw);row.appendChild(run);acts.appendChild(row);
+  $id("quizArea").style.display="none";
+}
+function eliteFoe(){ // 四天王(rank≥3)・博士・Administrator戦なら構造理解型の問題にする
+  return B && B.type==="trainer" && B.trainer && ((B.trainer.rank>=3) || B.trainer.admin);
+}
+function useMove(mk){
+  const mv=MOVES[mk];B.pendingMove=mk;
+  // クイズ出題: 四天王以上は構造理解型(成立条件・前提)プールを使う
+  let qkey=mv.qkey;
+  if(eliteFoe() && typeof ELITE_HARD!=="undefined" && ELITE_HARD[mv.type] && QUESTIONS[ELITE_HARD[mv.type]]) qkey=ELITE_HARD[mv.type];
+  const pool=QUESTIONS[qkey];let idxs=pool.map((_,i)=>i).filter(i=>!B.usedQ.includes(qkey+i));
+  if(idxs.length===0){B.usedQ=B.usedQ.filter(s=>!s.startsWith(qkey));idxs=pool.map((_,i)=>i);}
+  const qi=idxs[(Math.random()*idxs.length)|0];B.usedQ.push(qkey+qi);
+  let base=pool[qi];if(base.gen){try{base=base.gen();}catch(e){base={q:"(生成エラー)",correct:"-",wrong:["a","b","c"]};}}
+  const opts=shuffle([{t:base.correct,ok:true},...base.wrong.map(w=>({t:w,ok:false}))]);
+  B.curQ={opts};
+  $id("battleMenu").innerHTML="";
+  $id("quizArea").style.display="block";
+  $id("quizMove").style.setProperty("--tc",TYPES[mv.type].color);
+  $id("quizMove").innerHTML=`<b>${mv.name}</b> ― 正解で発動！`;
+  $id("quizQ").textContent=base.q;
+  const box=$id("quizChoices");box.innerHTML="";
+  opts.forEach((o,i)=>{const b=document.createElement("button");b.className="qchoice";b.textContent=o.t;b.onclick=()=>answerMove(i,b);box.appendChild(b);});
+}
+/* ダメージ計算: 相手の最大HPに対する割合で設計しテンポ良く。
+   mine=true はプレイヤーの攻撃(与ダメ大きめ)、false は敵の攻撃(控えめ)。 */
+function calcDamage(mv,attacker,defender,mul,mine){
+  const dmax=defender.maxhp;
+  // 威力を割合に変換: 威力40で基準。プレイヤーは相手HPの約33%(等倍)、敵は約18%。
+  const base = mine ? 0.009 : 0.0052;      // 係数
+  let frac = mv.power * base;               // 威力ベースの割合
+  // レベル/攻撃力差を緩やかに反映(±25%程度)
+  const atkRatio = clamp(attacker.atk / Math.max(6, (SPECIES[defender.sp].base.atk*defender.lv/50+5)), 0.6, 1.6);
+  frac *= (0.75 + 0.25*atkRatio);
+  frac *= mul;                              // 相性
+  if(mine && B && B.combo>=3) frac *= 1.25; // コンボボーナス
+  if(mine && B && B.combo>=6) frac *= 1.15; // さらに
+  let dmg = Math.round(dmax * frac);
+  const floor = mine ? Math.max(4, Math.round(dmax*0.15)) : 3; // 最低保証(プレイヤーは下振れしすぎない)
+  return Math.max(floor, dmg);
+}
+function answerMove(i,btn){
+  document.querySelectorAll(".qchoice").forEach(b=>b.disabled=true);
+  const o=B.curQ.opts[i],mv=MOVES[B.pendingMove],my=myMon(),foe=B.foe;
+  if(o.ok){
+    B.combo++;btn.classList.add("correct");
+    // ダメージ計算
+    const mul=typeMulMon(mv,my,foe);
+    let dmg=calcDamage(mv,my,foe,mul,true);
+    if(mul>=2){sfx("super");}else if(mul<=0.5){sfx("weak");}else{sfx("hit");}
+    const art=$id("foeArt");art.classList.add("hit");setTimeout(()=>art.classList.remove("hit"),300);
+    foe.hp=Math.max(0,foe.hp-dmg);renderBattle();popDmg("foeArt","-"+dmg,mul>=2?"super":(mul<=0.5?"weak":""));
+    let eff=mul>=2?" 効果は抜群だ！":(mul<=0.5?" 効果はいまひとつ…":"");
+    log('正解！ '+SPECIES[my.sp].name+'の'+mv.name+'！ '+dmg+'ダメージ'+(B.combo>=3?'（コンボ）':'')+'。'+eff+saltHint(mv,my,foe));
+    if(foe.hp<=0){setTimeout(foeFainted,700);}else{setTimeout(foeTurn,900);}
+  }else{
+    B.combo=0;btn.classList.add("wrong");sfx("miss");popDmg("foeArt","MISS","miss");
+    B.curQ.opts.forEach((oo,idx)=>{if(oo.ok)document.querySelectorAll(".qchoice")[idx].classList.add("correct");});
+    log('不正解… '+SPECIES[my.sp].name+'は技を出せなかった！');
+    setTimeout(foeTurn,1400);
+  }
+}
+/* 塩の相手に酸・塩基として技を当てたとき、なぜその倍率かを1戦に1回だけ説明する */
+/* 日本史版: 化学の塩ヒントは使わない（相性計算は内部で維持） */
+function saltHint(mv,att,def){ return ""; }
+function foeTurn(){
+  if(!B)return;
+  const foe=B.foe,my=myMon();
+  if(foe.hp<=0){foeFainted();return;}
+  if(my.hp<=0){afterMyFaint();return;}
+  // 相手の技: ランダム、属性相性反映、命中はそこそこ
+  const fsp=SPECIES[foe.sp];const fmoves=foe.moves.length?foe.moves:["tackle"];const mk=pick2(fmoves);const mv=MOVES[mk];
+  const hitChance=0.8;
+  if(Math.random()<hitChance){
+    const mul=typeMulMon(mv,foe,my);
+    let dmg=calcDamage(mv,foe,my,mul,false);
+    my.hp=Math.max(0,my.hp-dmg);
+    if(mul>=2)sfx("super");else sfx("hit");
+    const art=$id("myArt");art.classList.add("hit");setTimeout(()=>art.classList.remove("hit"),300);
+    renderBattle();popDmg("myArt","-"+dmg,mul>=2?"super":(mul<=0.5?"weak":""));
+    let eff=mul>=2?" 効果は抜群だ！":(mul<=0.5?" 効果はいまひとつ…":"");
+    log('相手の'+SPECIES[foe.sp].name+'の'+mv.name+'！ '+dmg+'ダメージ。'+eff);
+    if(my.hp<=0){setTimeout(afterMyFaint,800);return;}
+  }else{ popDmg("myArt","MISS","miss"); log('相手の'+SPECIES[foe.sp].name+'の攻撃は外れた！'); }
+  setTimeout(showMoveMenu,900);
+}
+function foeFainted(){
+  if(!B)return;
+  sfx("faint");const foe=B.foe,my=myMon();
+  log('<span class="sys">💥 </span>'+(B.type==="trainer"?"相手の":"野生の")+SPECIES[foe.sp].name+'を倒した！');
+  // 経験値
+  const gain=Math.round(SPECIES[foe.sp].base.hp*0.6+foe.lv*7+10);
+  grantExp(my,gain);
+  const gold=Math.round(foe.lv*6+ri(3,8));state.gold+=gold;
+  if(B.type==="trainer"){
+    // 次の相手
+    const idx=B.foeTeam.indexOf(B.foe);const nxt=B.foeTeam.slice(idx+1).find(m=>m.hp>0);
+    if(nxt){B.foe=nxt;setTimeout(()=>{renderBattle();log('相手は'+SPECIES[nxt.sp].name+'を繰り出した！');setTimeout(showMoveMenu,500);},900);return;}
+    // トレーナー撃破
+    setTimeout(()=>winTrainer(),900);return;
+  }
+  setTimeout(()=>{refresh();saveState();endBattle();},1100);
+}
+function winTrainer(){
+  const t=B.trainer;
+  const isAdmin=(t.id==="t_admin");
+  if(t.player){ toast("🏅 "+escapeHtml(t.name)+"の編成に勝利！"); } // 自由対戦: バッジ対象外、何度でも挑める
+  else if(isAdmin){ if(!state.beaten.includes(t.id)){state.beaten.push(t.id);} toast("⚡ <b>第六天魔王 ノブナガンを撃破！</b> 天下統一だ！"); }
+  else if(!state.beaten.includes(t.id)){state.beaten.push(t.id);
+    if(!state.badges.includes(t.id)){state.badges.push(t.id);}toast("🏅 バッジ獲得！ "+escapeHtml(t.name)+"を倒した！");
+  }
+  // 勝敗記録: 自分の勝ち。CPU相手ならそのCPUの成績も更新
+  state.wins=(state.wins||0)+1;
+  if(t && t.id && !t.player) bumpCpuRecord(t.id, true);
+  sfx("win");saveState();
+  const lose=t.player?(t.lose||"参った！"):(BOSS_LINES[t.id]?BOSS_LINES[t.id].lose:"参った！");
+  // ランク5(博士)撃破で通常エンディング。Administrator撃破で真エンディング。
+  const isFinal=(t.id==="t_dr");
+  endBattle(()=>{startDialogue(t.name,t.color||"#9a7cf0",[lose],()=>{
+    if(isAdmin&&!state.flags.endingAdmin){state.flags.endingAdmin=true;playEnding(true);}
+    else if(isFinal&&!state.flags.ending){state.flags.ending=true;playEnding();}
+  });});
+}
+function afterMyFaint(){
+  sfx("faint");log(SPECIES[myMon().sp].name+'は倒れた…');
+  const nxt=state.party.findIndex(m=>m.hp>0);
+  if(nxt<0){ // 全滅＝敗北
+    if(B&&B.type==="trainer"&&B.trainer){ state.losses=(state.losses||0)+1; if(!B.trainer.player)bumpCpuRecord(B.trainer.id,false); }
+    setTimeout(()=>{toast("目の前が真っ暗になった…");healAll();backToHeal();},900); return; }
+  setTimeout(()=>{ showSwitch(true); },900);
+}
+function backToHeal(){ endBattle(); // 最寄りの回復可能エリアへ（簡易: 現エリア入口）
+  const s=startTile(state.area);state.px=s.x;state.py=s.y;place("player",state.px,state.py);camera();refresh();saveState();
+  log('<span class="sys">✚ </span>手持ちを回復した。回復所(✚)でいつでも全回復できる。'); }
+
+function grantExp(m,amount){
+  m.exp+=amount;let leveled=false,evolved=null;
+  while(m.exp>=expToNext(m.lv)){m.exp-=expToNext(m.lv);m.lv++;leveled=true;recalcMon(m);
+    // 技習得
+    SPECIES[m.sp].learnset.forEach(l=>{if(l.lv===m.lv&&!m.moves.includes(l.move)){if(m.moves.length<4)m.moves.push(l.move);else{m.moves.shift();m.moves.push(l.move);}toast("📘 "+SPECIES[m.sp].name+"は"+MOVES[l.move].name+"を覚えた！");}});
+    // 進化
+    const evo=SPECIES[m.sp].evo;if(evo&&m.lv>=evo.lv){evolved=evo.to;}
+  }
+  if(leveled){sfx("level");toast("⬆ "+SPECIES[m.sp].name+" は Lv"+m.lv+" に！");}
+  if(evolved){const from=m.sp;m.sp=evolved;recalcMon(m);dexAdd(evolved);sfx("evo");
+    // 進化先の技も補充
+    SPECIES[evolved].learnset.forEach(l=>{if(l.lv<=m.lv&&!m.moves.includes(l.move)){if(m.moves.length<4)m.moves.push(l.move);}});
+    toast("✨ おめでとう！ "+SPECIES[from].name+" は "+SPECIES[evolved].name+" に進化した！");}
+  renderBattle&&B&&renderBattle();
+}
+
+/* ===== 道具・交代・捕獲・逃走 ===== */
+function showBag(){
+  const acts=$id("battleMenu");acts.innerHTML="";
+  const items=[{k:"ball",label:"🔮 捕獲ボール",n:state.bag.ball,use:tryCatch,only:"wild"},
+    {k:"potion",label:"🧪 回復薬(+30)",n:state.bag.potion,use:()=>useHeal(30)},
+    {k:"bigpotion",label:"🧪 強回復薬(全快)",n:state.bag.bigpotion,use:()=>useHeal(999)}];
+  items.forEach(it=>{const b=document.createElement("button");b.className="mvBtn";b.innerHTML=`<b>${it.label}</b><span class="mvmeta">所持 ${it.n}</span>`;
+    b.disabled=it.n<=0||(it.only==="wild"&&B.type!=="wild");b.onclick=it.use;acts.appendChild(b);});
+  const back=document.createElement("button");back.className="cmdBtn";back.textContent="← 戻る";back.onclick=showMoveMenu;acts.appendChild(back);
+}
+function useHeal(amt){const my=myMon();if(my.hp>=my.maxhp){toast("HPは満タンだ");return;}
+  const key=amt>=999?"bigpotion":"potion";if(state.bag[key]<=0)return;state.bag[key]--;
+  my.hp=Math.min(my.maxhp,my.hp+amt);sfx("buy");renderBattle();log(SPECIES[my.sp].name+'のHPを回復した。');
+  setTimeout(foeTurn,800);}
+function showSwitch(forced){
+  const acts=$id("battleMenu");acts.innerHTML="";
+  $id("quizArea").style.display="none";
+  if(forced)log('次に戦うモンスターを選ぼう。');
+  state.party.forEach((m,i)=>{const b=document.createElement("button");b.className="mvBtn";
+    b.innerHTML=`<b>${SPECIES[m.sp].name}</b> Lv${m.lv}<span class="mvmeta">HP ${m.hp}/${m.maxhp}</span>`;
+    b.disabled=m.hp<=0||i===B.myIdx;b.onclick=()=>doSwitch(i,forced);acts.appendChild(b);});
+  if(!forced){const back=document.createElement("button");back.className="cmdBtn";back.textContent="← 戻る";back.onclick=showMoveMenu;acts.appendChild(back);}
+}
+function doSwitch(i,forced){B.myIdx=i;renderBattle();log(SPECIES[myMon().sp].name+'に交代した！');
+  if(forced){setTimeout(showMoveMenu,600);}else{setTimeout(foeTurn,700);}}
+function tryCatch(){
+  if(B.type!=="wild"){toast("トレーナーのモンスターは捕まえられない");return;}
+  if(state.bag.ball<=0){toast("ボールがない");return;}
+  /* 日本史版: 化学の滴定捕獲は使わず、通常のボール捕獲に統一 */
+  state.bag.ball--;const foe=B.foe;
+  const rate=clamp(1-foe.hp/foe.maxhp,0,1)*0.6+0.25; // HPが低いほど捕まえやすい
+  $id("battleMenu").innerHTML="";log('🔮 捕獲ボールを投げた…！');
+  sfx("catch");
+  setTimeout(()=>{
+    if(Math.random()<rate){
+      const caught={...foe,hp:foe.maxhp}; // 捕獲時は全快の控えに
+      if(state.party.length<6)state.party.push(caught);else state.box.push(caught);
+      dexAdd(foe.sp);state.flags.caughtAny=true;
+      toast("🎉 "+SPECIES[foe.sp].name+"を捕まえた！");sfx("win");saveState();
+      setTimeout(()=>endBattle(),900);
+    }else{log('あと少し…！ '+SPECIES[foe.sp].name+'は飛び出した！');setTimeout(foeTurn,900);}
+  },800);
+}
+/* ===== 中和滴定ミニゲーム（酸・塩基タイプの捕獲） ===== */
+let TT=null; // 滴定の状態
+function startTitration(){
+  const foe=B.foe, an=CHEM[foe.sp];
+  state.bag.ball--; saveState();
+  const C0=pick(TIT.concs);
+  TT={an,C0,Veq:Math.round(eqVolume(an,C0)*100)/100,v:0,ind:null,hpRatio:foe.hp/foe.maxhp,done:false};
+  $id("battleMenu").innerHTML=""; $id("quizArea").style.display="none";
+  const box=$id("titArea"); box.style.display="block";
+  const tr=titrant(an);
+  log('🔮 捕獲ボールを投げた… <b>中和滴定</b>で捕まえよう！');
+  box.innerHTML=`<div class="titHead">🧪 中和滴定で捕獲</div>
+   <div class="titInfo">コニカルビーカー: <b>${SPECIES[foe.sp].name}</b> ＝ ${an.name} <b>${an.formula}</b>（${an.strong?"強":"弱"}${an.kind==="acid"?"酸":"塩基"}・${an.z}価）10.00 mL、濃度は不明<br>
+   ビュレット: 0.100 mol/L ${tr.name} <b>${tr.formula}</b></div>
+   <div class="titQ">まず指示薬を選ぼう。中和点のpHは何性になる？</div>
+   <div class="titInds">${Object.entries(INDICATORS).map(([k,ind])=>`<button class="mvBtn" data-ind="${k}"><b>${ind.name}</b><span class="mvmeta">${ind.desc}</span></button>`).join("")}</div>`;
+  box.querySelectorAll("[data-ind]").forEach(b=>b.onclick=()=>chooseIndicator(b.dataset.ind));
+}
+function chooseIndicator(k){
+  TT.ind=k; const ind=INDICATORS[k]; const box=$id("titArea");
+  box.innerHTML=`<div class="titHead">🧪 ${ind.name} を加えた</div>
+   <div class="titStage">
+     <svg class="titBuret" viewBox="0 0 40 200"><rect x="14" y="4" width="12" height="166" rx="3" fill="#fff" stroke="#2a2350" stroke-width="2"/>
+       <rect id="titLiquid" x="15" y="5" width="10" height="164" fill="rgba(92,200,255,.45)"/>
+       ${Array.from({length:11},(_,i)=>`<line x1="14" x2="${i%5===0?22:19}" y1="${5+i*16.4}" y2="${5+i*16.4}" stroke="#2a2350" stroke-width="1"/>`).join("")}
+       <path d="M17 170 h6 l-1 14 h-4 z" fill="#fff" stroke="#2a2350" stroke-width="1.5"/><rect x="11" y="174" width="18" height="4" rx="2" fill="#ffd23f" stroke="#2a2350" stroke-width="1.2"/>
+       <circle id="titDrop" cx="20" cy="192" r="2.6" fill="rgba(92,200,255,.9)" opacity="0"/></svg>
+     <svg class="titFlask" viewBox="0 0 120 120">
+       <defs><clipPath id="flaskClip"><path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z"/></clipPath></defs>
+       <path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z" fill="#fff"/>
+       <g clip-path="url(#flaskClip)"><rect x="0" y="58" width="120" height="62" fill="rgba(160,215,255,.35)"/><rect id="titColor" x="0" y="58" width="120" height="62" fill="${indicatorRGBA(ind,solvePH(TT.an,TT.C0,0))}"/></g>
+       <path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z" fill="none" stroke="#2a2350" stroke-width="3" stroke-linejoin="round"/>
+       <path d="M30 64 l-10 22" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/></svg>
+   </div>
+   <div class="titVol">滴下量 <b id="titV">0.00</b> mL</div>
+   <div class="titBtns">
+     <button class="mvBtn" data-dv="2"><b>どばっと</b><span class="mvmeta">+2.00 mL</span></button>
+     <button class="mvBtn" data-dv="0.5"><b>少し</b><span class="mvmeta">+0.50 mL</span></button>
+     <button class="mvBtn" data-dv="0.05"><b>1滴</b><span class="mvmeta">+0.05 mL</span></button>
+     <button class="cmdBtn titStop" id="titStop">✋ ここで止める（終点）</button>
+   </div>
+   <div class="titHint">色が変わって、振り混ぜても戻らなくなったら止めよう。入れすぎは失敗！</div>`;
+  box.querySelectorAll("[data-dv]").forEach(b=>b.onclick=()=>addTitrant(parseFloat(b.dataset.dv)));
+  $id("titStop").onclick=finishTitration;
+  updateTitration();
+}
+function addTitrant(dv){
+  if(!TT||TT.done)return;
+  TT.v=Math.round((TT.v+dv)*100)/100;
+  if(TT.v>=50){TT.v=50;updateTitration();toast("ビュレットが空になった！");finishTitration();return;}
+  sfx("drop"); const d=$id("titDrop"); if(d){d.setAttribute("opacity","1");setTimeout(()=>d.setAttribute("opacity","0"),180);}
+  updateTitration();
+}
+function updateTitration(){
+  const pH=solvePH(TT.an,TT.C0,TT.v);
+  $id("titColor").setAttribute("fill",indicatorRGBA(INDICATORS[TT.ind],pH));
+  $id("titV").textContent=TT.v.toFixed(2);
+  const L=$id("titLiquid"); const frac=1-TT.v/50; L.setAttribute("y",5+164*(1-frac)); L.setAttribute("height",164*frac);
+}
+function finishTitration(){
+  if(!TT||TT.done)return; TT.done=true;
+  const {an,C0,Veq,v,hpRatio}=TT, ind=INDICATORS[TT.ind];
+  const {ok,near,indOK,err,tol,eqPH,cv}=titrationJudge(an,C0,TT.ind,v,hpRatio);
+  let why;
+  if(ok) why=`中和点（pH≈${eqPH.toFixed(1)}・${liquidity(eqPH)}）の近くで色が変わる指示薬を選び、誤差 ${Math.abs(err).toFixed(2)} mL で止められた！`;
+  else if(!indOK){ const where=cv.begin<Veq?"手前":"後"; 
+    why=(near?"中和点付近で止められたのは偶然。":"")+`${an.name}を${titrant(an).formula}で滴定すると、中和点は pH≈${eqPH.toFixed(1)}（${liquidity(eqPH)}）。${ind.name}は pH ${ind.lo}〜${ind.hi} で変色するので、中和点よりずっと${where}で色が変わってしまう。${an.strong?"":(an.kind==="acid"?"弱酸＋強塩基 → 中和点は塩基性側。":"強酸＋弱塩基 → 中和点は酸性側。")}`; }
+  else if(err<0) why=`指示薬の選択は正しい！ でもまだ中和点の手前（あと約 ${(-err).toFixed(2)} mL）。色が変わりきるまで待とう。`;
+  else why=`指示薬の選択は正しい！ でも入れすぎ（中和点を ${err.toFixed(2)} mL 超過）。終点が近づいたら1滴ずつ。`;
+  TTlast={...TT};
+  const box=$id("titArea");
+  box.innerHTML=`<div class="titHead">${ok?"🎉 終点ぴったり！":"💧 滴定失敗…"}</div>
+   <canvas id="titCurve"></canvas>
+   <div class="titLegend"><span style="color:#2f6bff">━ 滴定曲線</span>　<span style="color:#ef8700">┆ 中和点 ${Veq.toFixed(2)} mL</span>　<span style="color:${ok?'#1fae58':'#ff4d5e'}">▼ あなた ${v.toFixed(2)} mL</span>　<span style="color:#b25cf0">▒ 変色域</span></div>
+   <div class="note" style="margin-top:6px">${why}<br><span class="sub">この問題の濃度: ${C0.toFixed(3)} mol/L（${an.z}×${C0.toFixed(3)}×10.00 = 0.100×V より V=${Veq.toFixed(2)} mL）／ 許容誤差 ±${tol.toFixed(2)} mL（弱らせるほど広がる）</span></div>
+   <div style="text-align:center;margin-top:8px"><button class="startBtn" id="titNext" style="font-size:13px;padding:9px 26px">${ok?"仲間にする":"戦闘に戻る"}</button></div>`;
+  drawTitCurve(ind,v);
+  if(ok)sfx("catch"); else sfx("miss");
+  $id("titNext").onclick=()=>{ box.style.display="none"; box.innerHTML=""; const r=ok; TT=null; r?catchSuccess():catchFail(); };
+}
+/* 滴定曲線（汎用）。o={pHat:v=>pH, Veq, vmax, vStop, band:{lo,hi}|null, ok, xlabel} */
+function drawCurve(cv,o){
+  const g=cv.getContext("2d"),dpr=window.devicePixelRatio||1;
+  const W=Math.max(280,cv.clientWidth||520),H=Math.round(W*0.46),pl=34,pr=10,pt=10,pb=26;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+"px";g.setTransform(dpr,0,0,dpr,0,0);
+  const vmax=o.vmax, X=v=>pl+(W-pl-pr)*v/vmax, Y=p=>pt+(H-pt-pb)*(1-p/14);
+  g.clearRect(0,0,W,H); g.font="bold 11px sans-serif";
+  if(o.band){ g.fillStyle="rgba(178,92,240,.18)"; g.fillRect(pl,Y(o.band.hi),W-pl-pr,Y(o.band.lo)-Y(o.band.hi)); }
+  g.strokeStyle="#e7e2f7"; g.lineWidth=1; g.fillStyle="#6d6894";
+  for(let p=0;p<=14;p+=2){g.beginPath();g.moveTo(pl,Y(p));g.lineTo(W-pr,Y(p));g.stroke();if(p<14)g.fillText(String(p),pl-16,Y(p)+3);}
+  g.fillText("pH",pl-22,Y(14)+4); g.fillText(o.xlabel||"滴下量 (mL)",W-70,H-4);
+  const step=vmax>30?10:(vmax>12?5:2); for(let v=0;v<=vmax-step*0.6;v+=step){g.fillText(String(v),X(v)-4,H-pb+13);}
+  g.strokeStyle="#ef8700"; g.lineWidth=2; g.setLineDash([5,4]); g.beginPath(); g.moveTo(X(o.Veq),pt); g.lineTo(X(o.Veq),H-pb); g.stroke(); g.setLineDash([]);
+  g.strokeStyle="#2f6bff"; g.lineWidth=3; g.lineJoin="round"; g.beginPath();
+  for(let i=0;i<=400;i++){const v=vmax*i/400,p=o.pHat(v); i?g.lineTo(X(v),Y(p)):g.moveTo(X(v),Y(p));} g.stroke();
+  if(o.vStop!=null){ const vs=Math.min(o.vStop,vmax), ps=o.pHat(vs); g.fillStyle=o.ok?"#1fae58":"#ff4d5e"; g.strokeStyle="#2a2350"; g.lineWidth=1.5;
+    g.beginPath(); g.moveTo(X(vs),Y(ps)-3); g.lineTo(X(vs)-6,Y(ps)-13); g.lineTo(X(vs)+6,Y(ps)-13); g.closePath(); g.fill(); g.stroke(); }
+}
+function drawTitCurve(ind,vStop){ const T=TTlast;
+  drawCurve($id("titCurve"),{pHat:v=>solvePH(T.an,T.C0,v),Veq:T.Veq,vmax:Math.max(T.Veq*2,vStop+1),vStop,band:ind,ok:Math.abs(vStop-T.Veq)<=titTolerance(T.Veq,T.hpRatio)}); }
+let TTlast=null;
+function catchSuccess(){ const foe=B.foe;
+  const caught={...foe,hp:foe.maxhp};
+  if(state.party.length<6)state.party.push(caught);else state.box.push(caught);
+  dexAdd(foe.sp);state.flags.caughtAny=true;
+  toast("🎉 "+SPECIES[foe.sp].name+"を捕まえた！");sfx("win");saveState();
+  setTimeout(()=>endBattle(),600); }
+function catchFail(){ log(SPECIES[B.foe.sp].name+'は飛び出した！'); setTimeout(foeTurn,600); }
+function tryRun(){ if(Math.random()<0.7){toast("うまく逃げ切れた");endBattle();}else{log('逃げられなかった！');setTimeout(foeTurn,700);} }
+function endBattle(after){$id("battle").style.display="none";$id("battle").classList.remove("trainer");$id("viewport").style.display="block";$id("app").classList.remove("battling");
+  requestAnimationFrame(relayout);
+  const A=AREAS[state.area];playMusic(A.kind==="arena"?"arena":"field");B=null;refresh();drawMinimap();if(after)after();}
+
+/* =========================================================
+   中和道場（設計: docs/design-neutralization-battle.md）
+   段1 identify: 3つのビーカーを指示薬で調べてから中和
+   段2〜4 seq  : 1体ずつ、計算して標準液を注ぐ（反撃あり）
+   段5 titrate : 指示薬の色だけで終点を見きわめ、できた塩の性質を予想（反撃なし）
+   ========================================================= */
+let DJ=null;
+const DOJO_MASTER={name:"年代整序道場の師範 トキ",color:"#1fb866"};
+const LIQ_JA={acid:"酸性",base:"塩基性",neutral:"中性"};
+function dojoFlags(){const f=state.flags;
+  if(!f.dojo||typeof f.dojo!=="object")f.dojo={};
+  if(!f.dojo.stars||typeof f.dojo.stars!=="object")f.dojo.stars={};
+  if(!f.dojo.salts||typeof f.dojo.salts!=="object")f.dojo.salts={};
+  return f.dojo;}
+function dojoMe(){return state.party.find(m=>m.hp>0)||state.party[0];}
+function openDojoMenu(){
+  const show=()=>{$id("dojoMenu").classList.add("show");renderDojoMenu();};
+  if(!state.flags.dojoMet){state.flags.dojoMet=true;saveState();
+    startDialogue(DOJO_MASTER.name,DOJO_MASTER.color,[
+      "ここは年代整序道場。歴史の出来事を、正しい時系列に並べる修行の場だ。",
+      "バラバラの出来事カードを、古い順（左が最も古い）に並べ替えるのだ。",
+      "2枚のカードをタップすると入れ替わる。並べ終えたら「チェック」で確かめよ。",
+      "少ない挑戦で正解するほど、多くの星がもらえる。流れでつかむのが上達の近道だ！"],show);return;}
+  show();}
+function closeDojoMenu(){$id("dojoMenu").classList.remove("show");}
+function renderDojoMenu(){const F=dojoFlags();
+  let h=`<div class="note" style="margin-bottom:12px">出来事カードを<b>古い順（左→右）</b>に並べよう。正しい時系列に並べられたらクリア！ どの段からでも挑戦でき、ミスが少ないほど星が多くもらえる。${F.badge?"<br>🏅 道場バッジ獲得ずみ！":""}</div>`;
+  DOJO_STAGES.forEach(st=>{const n=F.stars[st.no]||0;
+    h+=`<div class="row stg"><div class="info"><span class="stgNo">段${st.no}</span> ${st.title}<div class="sub">${st.unit}</div><div class="sub">${st.goal}</div>
+      <div class="stars" aria-label="星${n}つ">${"★".repeat(n)}<span class="off">${"★".repeat(3-n)}</span></div></div>
+      <div class="monbtns"><button class="actBtn" onclick="startDojo(${st.no},false)">挑戦</button></div></div>`;});
+  $id("dojoMenuBody").innerHTML=h;}
+
+/* ===== 年代整序道場 本体 ===== */
+function startDojo(no,practice){
+  const st=DOJO_STAGES.find(s=>s.no===no); if(!st)return;
+  if(!state.party.length){toast("手持ちがいない");return;}
+  closeDojoMenu(); stopWalk(); stopHold(); healAll();
+  // 出来事をシャッフルして並べ替え用の初期列を作る
+  const shuffled=shuffle(st.events.map((e,i)=>({...e,id:i})));
+  DJ={st,no,order:shuffled,sel:null,tries:0,solved:false};
+  $id("viewport").style.display="none"; $id("dojo").style.display="block"; $id("app").classList.add("battling"); $id("dojo").scrollTop=0;
+  playMusic("battle");
+  log(`<span class="sys">🥋 </span>段${no}「${st.title}」開始！ ${st.goal}`);
+  renderDojo();
+}
+/* 2枚のカードを入れ替え */
+function dojoSwap(i,j){ if(!DJ||DJ.solved)return; const o=DJ.order; const t=o[i];o[i]=o[j];o[j]=t; }
+function dojoTap(i){ if(!DJ||DJ.solved)return;
+  if(DJ.sel===null){ DJ.sel=i; }
+  else if(DJ.sel===i){ DJ.sel=null; }
+  else { dojoSwap(DJ.sel,i); DJ.sel=null; }
+  renderDojo();
+}
+function dojoCheck(){ if(!DJ||DJ.solved)return; DJ.tries++;
+  const ys=DJ.order.map(e=>e.y);
+  const ok=ys.every((v,i)=>i===0||ys[i-1]<=v);
+  if(ok){ DJ.solved=true;
+    // 星: 1回で3つ, 2回で2つ, それ以上1つ（本番のみ記録）
+    const stars=DJ.tries<=1?3:DJ.tries===2?2:1;
+    const F=dojoFlags(); if((F.stars[DJ.no]||0)<stars)F.stars[DJ.no]=stars;
+    if(DOJO_STAGES.every(s=>(F.stars[s.no]||0)>0)) F.badge=true;
+    saveState();
+    renderDojo();
+  } else {
+    // どこが違うかヒント: 最初に順序が逆転している箇所
+    let hint="";
+    for(let i=1;i<DJ.order.length;i++){ if(DJ.order[i-1].y>DJ.order[i].y){ hint=`「${DJ.order[i-1].t}」と「${DJ.order[i].t}」の順番を見直そう。`; break; } }
+    DJ.hint=hint; renderDojo();
+  }
+}
+function renderDojo(){ if(!DJ)return; const st=DJ.st;
+  let cards=DJ.order.map((e,i)=>{
+    const sel=DJ.sel===i?" sel":"";
+    const pos=DJ.solved?`<div class="seqYear">${e.y}年</div>`:`<div class="seqNo">${i+1}番目</div>`;
+    return `<div class="seqCard${sel}" onclick="dojoTap(${i})"><div class="seqText">${e.t}</div>${pos}</div>`;
+  }).join('<div class="seqArrow">▶</div>');
+  let foot;
+  if(DJ.solved){
+    const chain=DJ.order.map(e=>`${e.t}（${e.y}年）`).join(" → ");
+    foot=`<div class="seqResult ok">🎉 正しい時系列に並べられた！</div>
+      <div class="seqChain">${chain}</div>
+      <div style="text-align:center;margin-top:10px"><button class="startBtn" onclick="endDojo()">道場に戻る</button></div>`;
+  } else {
+    foot=`<div class="seqHelp">カードを2枚タップして入れ替え。古い順（左が最古）に並べよう。${DJ.hint?`<br><span class="seqHint">💡 ${DJ.hint}</span>`:""}</div>
+      <div style="text-align:center;margin-top:8px"><button class="cmdBtn pourBtn" onclick="dojoCheck()">⏱ 並び順をチェック</button>　<button class="miniBtn" onclick="endDojo()">やめる</button></div>
+      <div class="seqTries">挑戦 ${DJ.tries} 回</div>`;
+  }
+  $id("dField").innerHTML=`<div class="seqGoal"><span class="stgNo">段${st.no}</span> ${st.goal}</div><div class="seqRow">${cards}</div>`;
+  $id("dCmd").innerHTML=foot;
+}
+function endDojo(){ $id("dojo").style.display="none"; $id("viewport").style.display="block"; $id("app").classList.remove("battling");
+  DJ=null; healAll(); playMusic(AREAS[state.area].kind==="arena"?"arena":"field"); refresh(); saveState(); requestAnimationFrame(relayout); }
+
+/* ---------- 表示 ---------- */
+function bkName(i){const b=DJ.beakers[i]; return DJ.st.mode==="identify"?("ビーカー"+"ABC"[i]):(b.s.name+" "+b.s.formula);}
+function ionOf(s){return s.kind==="acid"?"H⁺":"OH⁻";}
+function identText(k){ if(k.acid===true)return "酸性"; if(k.base===true)return "塩基性";
+  if(k.acid===false&&k.base===false)return "中性"; if(k.acid===false)return "酸性ではない"; if(k.base===false)return "塩基性ではない"; return "？"; }
+function beakerSVG(fill){return `<svg class="bkBeaker" viewBox="0 0 60 64"><path d="M10 6 h40 v48 q0 6 -6 6 h-28 q-6 0 -6 -6 z" fill="#fff"/>
+  <path d="M11 26 h38 v28 q0 5 -5 5 h-28 q-5 0 -5 -5 z" fill="${fill}"/>
+  <path d="M10 6 h40 v48 q0 6 -6 6 h-28 q-6 0 -6 -6 z M6 6 h48" fill="none" stroke="#2a2350" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M16 32 v18" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/></svg>`;}
+function phMeterHTML(p){return `<div class="phMeter"><div class="phBar"><span class="phNeedle" style="left:${clamp(p/14*100,0,100)}%"></span></div><div class="phVal">pH ${p.toFixed(1)}</div></div>`;}
+function dojoBeakerCard(i){
+  const b=DJ.beakers[i], sp=b.spec, st=DJ.st, show=st.show, k=DJ.known[i], ident=st.mode==="identify", S=b.s;
+  const state_=beakerState(b), p=beakerPH(b);
+  const hidden=ident&&identText(k)==="？";
+  const info=[`体積 <b>${sp.V.toFixed(1)}</b> mL`];
+  if(!ident){
+    if(show.conc) info.push(`濃度 <b>${sig2(sp.C)}</b> mol/L`); else info.push(`濃度 <b>?</b>`);
+    if(show.ph==="init"){ const ph0=sp.pH!=null?sp.pH:sp.phShown; info.push(`最初の pH <b>${ph0}</b>`);
+      if(sp.phShown!=null) info.push(`<span class="hint">発展: [H⁺][OH⁻]＝1.0×10${sup(-14)}</span>`); }
+    if(st.mode!=="titrate") info.push(`${ionOf(S)} の物質量 <b>?</b>`);
+  }else{
+    info.push(`調べた結果 <b>${identText(k)}</b>`);
+    if(k.acid===true||k.base===true) info.push(`${k.acid?"H⁺":"OH⁻"} <b>${sci(b.n0)}</b> mol`);
+  }
+  const fill=DJ.btb?btbRGBA(p):"rgba(160,215,255,.45)";
+  let tag=""; const touched=b.pours.length>0;
+  if(state_.done&&(touched||!ident)&&b.n0>0) tag=`<span class="bkTag ok">✓ 中和</span>`;
+  else if(ident&&b.n0===0&&touched&&!state_.done) tag=`<span class="bkTag ng">⚠ ${LIQ_JA[state_.side]}に</span>`;
+  else if(state_.flipped) tag=`<span class="bkTag ng">⚠ ${LIQ_JA[state_.side]}に逆転</span>`;
+  const sel=ident&&DJ.cur===i?" sel":"", pick=ident?" pick":"";
+  return `<div class="bkCard${sel}${pick}${state_.done&&touched?" done":""}" ${ident?`onclick="dojoSelect(${i})"`:""}>${tag}
+    <div class="bkName">${ident?"ビーカー"+"ABC"[i]:S.name+" "+S.formula}</div>
+    <div class="bkPics"><div class="bkArt${hidden?" hidden":""}">${monSVG(SUBST[sp.sub].sp)}</div>${beakerSVG(fill)}</div>
+    <div class="bkInfo">${info.join("<br>")}</div>
+    ${show.ph==="live"?phMeterHTML(p):""}</div>`;
+}
+function dojoMeCard(){const m=dojoMe(),r=m.hp/m.maxhp;
+  return `<div class="dMe"><div class="bart" id="dMyArt">${monSVG(m.sp)}</div>
+    <div class="bcard"><div class="bname"><span>${SPECIES[m.sp].name}</span>${typeBadge(SPECIES[m.sp].type)}</div>
+    <div class="blv">相棒 Lv${m.lv}</div><div class="hpline"><span class="${hpCls(r)}" style="width:${r*100}%"></span></div><div class="hptxt">${m.hp}/${m.maxhp}</div></div></div>`;}
+/* 旧・化学版(未使用。年代整序道場の renderDojo を上書きしないよう改名) */
+function renderDojo_chem_unused(){ if(!DJ)return; const st=DJ.st;
+  let f="";
+  if(st.mode==="identify") f=`<div class="bkRow">${DJ.beakers.map((_,i)=>dojoBeakerCard(i)).join("")}</div>`;
+  else f=`<div class="dProg">相手 ${DJ.cur+1} / ${DJ.beakers.length}</div><div class="bkRow">${dojoBeakerCard(DJ.cur)}</div>`;
+  f+=dojoMeCard();
+  $id("dField").innerHTML=f;
+  if(DJ.phase==="play"&&st.mode!=="titrate") $id("dCmd").innerHTML=dojoPlayCmd();
+  renderPartyPanel();
+}
+function dojoPlayCmd(){const st=DJ.st,ident=st.mode==="identify";
+  let h=`<div class="dGoal"><span class="stgNo">段${st.no}${DJ.practice?" 練習":""}</span> ${st.goal}</div>`;
+  if(ident) h+=`<div class="dLbl">調べる（3つのビーカー全部に使う・1ターン）</div><div class="toolRow">
+      <button class="mvBtn" onclick="dojoTest('blue')"><b>青色リトマス紙</b><span class="mvmeta">酸性なら赤に</span></button>
+      <button class="mvBtn" onclick="dojoTest('red')"><b>赤色リトマス紙</b><span class="mvmeta">塩基性なら青に</span></button>
+      <button class="mvBtn" onclick="dojoTest('btb')"><b>BTB溶液</b><span class="mvmeta">黄・緑・青</span></button></div>
+      <div class="dLbl">注ぐビーカー：<b>${DJ.cur==null?"カードをタップして選ぶ":"ビーカー"+"ABC"[DJ.cur]}</b></div>`;
+  h+=`<div class="dLbl">注ぐ標準液</div><div class="stdRow">${Object.keys(STD).map(k=>`<button class="mvBtn${DJ.std===k?" on":""}" onclick="dojoStd('${k}')"><b>${STD[k].short}</b><span class="mvmeta">${sig2(STD[k].C)} mol/L・${ionOf(STD[k].s)}を出す</span></button>`).join("")}</div>
+    <div class="volBox"><span class="v" id="dVol">${DJ.input||"0"}</span><span>mL</span></div>
+    <div class="kp">${["7","8","9","+1.00","4","5","6","+0.10","1","2","3","+0.05","0",".","⌫","C"].map(k=>`<button class="${/^[0-9.]$/.test(k)?"":"q"}" onclick="dojoKey('${k}')">${k==="C"?"クリア":k}</button>`).join("")}</div>
+    <button class="cmdBtn pourBtn" onclick="dojoPour()">💧 注ぐ</button>`;
+  return h;}
+function dojoSelect(i){ if(!DJ||DJ.phase!=="play"||DJ.busy)return; DJ.cur=i; renderDojo(); }
+function dojoStd(k){ if(!DJ||DJ.busy)return; DJ.std=k; renderDojo(); }
+function dojoKey(k){ if(!DJ||DJ.busy)return; let s=DJ.input;
+  if(k==="⌫")s=s.slice(0,-1); else if(k==="C")s="";
+  else if(k[0]==="+"){const v=Math.min(BURET_MAX,(parseFloat(s)||0)+parseFloat(k.slice(1)));s=(Math.round(v*100)/100).toFixed(2);}
+  else if(k==="."){ if(!s.includes("."))s=(s||"0")+"."; }
+  else { if(/\.\d\d$/.test(s))return; const t=(s==="0"?"":s)+k; if(parseFloat(t)>BURET_MAX){toast("1回に注げるのは "+BURET_MAX.toFixed(2)+" mL まで");return;} s=t; }
+  DJ.input=s; $id("dVol").textContent=s||"0"; }
+
+/* ---------- 段1: 調べる ---------- */
+function dojoTest(tool){ if(!DJ||DJ.phase!=="play"||DJ.busy)return;
+  DJ.tests++; DJ.turns++; sfx("drop");
+  const res=DJ.beakers.map((b,i)=>{const l=liqOf(beakerPH(b)),k=DJ.known[i];
+    if(tool==="blue"){k.acid=(l==="acid");return "ABC"[i]+(l==="acid"?":赤に変わった":":青のまま");}
+    if(tool==="red"){k.base=(l==="base");return "ABC"[i]+(l==="base"?":青に変わった":":赤のまま");}
+    k.acid=(l==="acid");k.base=(l==="base");return "ABC"[i]+":"+(l==="acid"?"黄":l==="base"?"青":"緑");});
+  if(tool==="btb")DJ.btb=true;
+  const nm={blue:"青色リトマス紙",red:"赤色リトマス紙",btb:"BTB溶液"}[tool];
+  log(`🔍 ${nm}で調べた → ${res.join("　")}`);
+  renderDojo(); dojoCounter();
+}
+/* ---------- 注ぐ ---------- */
+function dojoPour(){ if(!DJ||DJ.phase!=="play"||DJ.busy)return;
+  if(!DJ.std){toast("注ぐ標準液（NaOH か HCl）を選ぼう");return;}
+  if(DJ.cur==null){toast("注ぐビーカーをタップして選ぼう");return;}
+  const raw=parseFloat(DJ.input); if(!(raw>0)){toast("注ぐ量をテンキーで入力しよう");return;}
+  let v=Math.min(BURET_MAX,Math.max(0.05,Math.round(raw*20)/20)); const rounded=Math.abs(v-raw)>1e-9;
+  const i=DJ.cur,b=DJ.beakers[i],st=STD[DJ.std],before=beakerState(b);
+  const eq=pourInto(b,DJ.std,v); DJ.pours++; DJ.turns++; DJ.input=""; sfx("drop");
+  const after=beakerState(b), ionIn=ionOf(st.s);
+  let msg=`💧 ${bkName(i)}に ${st.short} を <b>${v.toFixed(2)} mL</b>（${sig2(st.C)} mol/L × ${v.toFixed(2)}/1000 L ＝ ${sci(eq)} mol の ${ionIn}）${rounded?"<span class='sub'>※0.05 mL 刻みに丸めた</span>":""}`;
+  if(!before.done&&before.side===st.s.kind) msg+=`<br>⚠ ${LIQ_JA[before.side]}のビーカーに${st.s.kind==="acid"?"酸":"塩基"}を加えても中和しない。${ionIn} が増えただけ！`;
+  else if(after.done) msg+=after.exact?"<br>🎯 <b>ぴったり中和！</b>":"<br>✓ 中和完了！（誤差 2% 以内）";
+  else if(before.done||after.flipped){ DJ.flips++; msg+=`<br>💥 入れすぎ！ <b>${LIQ_JA[after.side]}</b>になってしまった。${after.side==="acid"?"NaOH":"HCl"} で戻そう。`; }
+  else msg+=`<br>まだ<b>${LIQ_JA[after.side]}</b>。`;
+  log(msg);
+  if(DJ.st.mode==="identify"){
+    renderDojo();
+    if(DJ.beakers.every(x=>beakerState(x).done)){ sfx("win"); setTimeout(()=>dojoFinish(true),500); return; }
+    dojoCounter(); return; }
+  if(after.done){ sfx(after.exact?"super":"hit"); renderDojo(); dojoSummary(); return; }
+  renderDojo(); dojoCounter();
+}
+/* 相手の反撃（1ターン） */
+function dojoCounter(){ DJ.busy=true;
+  setTimeout(()=>{ if(!DJ)return; DJ.busy=false;
+    const m=dojoMe(), dmg=Math.max(1,Math.round(m.maxhp*DOJO_DMG)); m.hp=Math.max(0,m.hp-dmg);
+    const who=DJ.st.mode==="identify"?"ビーカーのしぶき":(SPECIES[SUBST[DJ.beakers[DJ.cur].sub].sp].name+"の反撃");
+    renderDojo(); popDmg("dMyArt","-"+dmg); sfx("hit");
+    log(`${who}！ ${SPECIES[m.sp].name}に ${dmg} ダメージ`);
+    if(m.hp<=0){ const n=state.party.find(x=>x.hp>0);
+      if(!n){ sfx("faint"); dojoFinish(false); return; }
+      log(SPECIES[m.sp].name+"は力尽きた… "+SPECIES[n.sp].name+"が交代して続ける！"); renderDojo(); }
+  },420); }
+/* 1体を中和し終えたときのまとめ（段2〜4） */
+function dojoSummary(){ DJ.phase="summary";
+  const b=DJ.beakers[DJ.cur],sp=b.spec,a=dojoAnswer(sp),stt=STD[a.std],s=beakerState(b);
+  const vEff=Math.abs(b.net0-s.net)/(stt.C*stt.s.z)*1000, last=DJ.cur>=DJ.beakers.length-1;
+  $id("dCmd").innerHTML=`<div class="titHead">${s.exact?"🎯 ぴったり中和！":"✓ 中和完了！"}</div>
+    <canvas id="dCurve"></canvas>
+    <div class="titLegend"><span style="color:#2f6bff">━ ${stt.short} を加えたときの pH</span>　<span style="color:#ef8700">┆ 中和点 ${a.v.toFixed(2)} mL</span>　<span style="color:#1fae58">▼ あなた ${vEff.toFixed(2)} mL 相当</span></div>
+    <div class="note" style="margin-top:6px">中和点の pH は <b>${dojoEqPH(sp).toFixed(1)}</b>（${liquidity(dojoEqPH(sp))}）。<ol class="stepList">${dojoSteps(sp).map(l=>"<li>"+l+"</li>").join("")}</ol></div>
+    <div style="text-align:center;margin-top:8px"><button class="startBtn" style="font-size:1em;padding:9px 26px" onclick="dojoNext()">${last?"結果を見る":"次の相手へ ▶"}</button></div>`;
+  const pHat=v=>{const x=makeBeaker(sp);if(v>0)pourInto(x,a.std,v);return beakerPH(x);};
+  drawCurve($id("dCurve"),{pHat,Veq:a.v,vmax:Math.max(a.v*2,vEff+1),vStop:vEff,band:null,ok:true,xlabel:stt.short+" (mL)"});
+}
+function dojoNext(){ if(!DJ)return; if(DJ.cur>=DJ.beakers.length-1){dojoFinish(true);return;}
+  DJ.cur++; DJ.phase="play"; DJ.std=null; DJ.input=""; log(`次の相手：${bkName(DJ.cur)}`); renderDojo(); }
+
+/* ---------- 段5: 指示薬で滴定し、塩の性質を予想 ---------- */
+function dojoTitAn(){const b=DJ.beakers[DJ.cur];return b.s;}
+function dojoTitStart(){ DJ.phase="titrate"; DJ.ti={ind:null,v:0,stage:"ind"}; renderDojo();
+  const b=DJ.beakers[DJ.cur],an=b.s,std=an.kind==="acid"?"NaOH":"HCl";
+  $id("dCmd").innerHTML=`<div class="dGoal"><span class="stgNo">段5</span> ${DJ.st.goal}</div>
+    <div class="titInfo">コニカルビーカー: <b>${an.name} ${an.formula}</b> 10.00 mL（濃度は不明）<br>ビュレット: ${STD[std].label}</div>
+    <div class="titQ">中和点の pH は何性になる？ それに合う指示薬を選ぼう。</div>
+    <div class="titInds">${Object.entries(INDICATORS).map(([k,ind])=>`<button class="mvBtn" onclick="dojoTitInd('${k}')"><b>${ind.name}</b><span class="mvmeta">${ind.desc}</span></button>`).join("")}</div>`; }
+function dojoTitInd(k){ const ti=DJ.ti; ti.ind=k; ti.v=0; ti.stage="drip"; const ind=INDICATORS[k],b=DJ.beakers[DJ.cur];
+  $id("dCmd").innerHTML=`<div class="titHead">🧪 ${ind.name} を加えた</div>
+    <div class="titStage"><svg class="titFlask" viewBox="0 0 120 120"><defs><clipPath id="dFlaskClip"><path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z"/></clipPath></defs>
+      <path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z" fill="#fff"/>
+      <g clip-path="url(#dFlaskClip)"><rect x="0" y="58" width="120" height="62" fill="rgba(160,215,255,.35)"/><rect id="dtColor" x="0" y="58" width="120" height="62" fill="${indicatorRGBA(ind,solvePH(b.s,b.spec.C,0))}"/></g>
+      <path d="M48 10 h24 v30 l34 66 q3 8 -6 8 h-80 q-9 0 -6 -8 l34 -66 z" fill="none" stroke="#2a2350" stroke-width="3" stroke-linejoin="round"/></svg></div>
+    <div class="titVol">滴下量 <b id="dtV">0.00</b> mL</div>
+    <div class="titBtns">
+      <button class="mvBtn" onclick="dojoTitAdd(2)"><b>どばっと</b><span class="mvmeta">+2.00 mL</span></button>
+      <button class="mvBtn" onclick="dojoTitAdd(0.5)"><b>少し</b><span class="mvmeta">+0.50 mL</span></button>
+      <button class="mvBtn" onclick="dojoTitAdd(0.05)"><b>1滴</b><span class="mvmeta">+0.05 mL</span></button>
+      <button class="cmdBtn titStop" onclick="dojoTitStop()">✋ ここで止める（終点）</button></div>
+    <div class="titHint">色が変わって、振り混ぜても戻らなくなったら止めよう。</div>`; }
+function dojoTitAdd(dv){ const ti=DJ&&DJ.ti; if(!ti||ti.stage!=="drip")return;
+  ti.v=Math.min(BURET_MAX*2,Math.round((ti.v+dv)*100)/100); sfx("drop"); const b=DJ.beakers[DJ.cur];
+  $id("dtColor").setAttribute("fill",indicatorRGBA(INDICATORS[ti.ind],solvePH(b.s,b.spec.C,ti.v))); $id("dtV").textContent=ti.v.toFixed(2);
+  if(ti.v>=BURET_MAX*2){toast("入れすぎ！");dojoTitStop();} }
+function dojoTitStop(){ const ti=DJ&&DJ.ti; if(!ti||ti.stage!=="drip")return; ti.stage="judged";
+  const b=DJ.beakers[DJ.cur],an=b.s,C0=b.spec.C,ind=INDICATORS[ti.ind];
+  const J=titrationJudge(an,C0,ti.ind,ti.v,0.5);
+  let why;
+  if(J.ok) why=`中和点（pH≈${J.eqPH.toFixed(1)}・${liquidity(J.eqPH)}）の近くで色が変わる指示薬を選び、誤差 ${Math.abs(J.err).toFixed(2)} mL で止められた！`;
+  else if(!J.indOK) why=`${an.name}の中和点は pH≈${J.eqPH.toFixed(1)}（${liquidity(J.eqPH)}）。${ind.name}は pH ${ind.lo}〜${ind.hi} で色が変わるので、中和点よりずっと${J.cv.begin<J.Veq?"手前":"後"}で色が変わってしまう。`;
+  else if(J.err<0) why=`指示薬は正しい！ でもまだ中和点の手前（あと約 ${(-J.err).toFixed(2)} mL）。`;
+  else why=`指示薬は正しい！ でも入れすぎ（${J.err.toFixed(2)} mL 超過）。終点が近づいたら1滴ずつ。`;
+  if(!J.ok){DJ.fails++;sfx("miss");}else sfx("super");
+  const salt=SALT_OF[b.sub],S=SALTS[salt];
+  $id("dCmd").innerHTML=`<div class="titHead">${J.ok?"🎯 終点ぴったり！":"💧 終点を外した…"}</div><canvas id="dCurve"></canvas>
+    <div class="titLegend"><span style="color:#2f6bff">━ 滴定曲線</span>　<span style="color:#ef8700">┆ 中和点 ${J.Veq.toFixed(2)} mL</span>　<span style="color:${J.ok?"#1fae58":"#ff4d5e"}">▼ あなた ${ti.v.toFixed(2)} mL</span>　<span style="color:#b25cf0">▒ 変色域</span></div>
+    <div class="note" style="margin-top:6px">${why}<br><span class="sub">この相手の濃度は ${sig2(C0)} mol/L だった（1×${sig2(C0)}×10.00 ＝ 0.10×V より V＝${J.Veq.toFixed(2)} mL）</span></div>
+    ${J.ok?`<div class="titQ">中和でできた塩は <b>${S.name} ${S.formula}</b>。この塩の水溶液は何性？</div>
+      <div class="toolRow">${["acidic","neutral","basic"].map(l=>`<button class="mvBtn" onclick="dojoPredict('${l}')"><b>${LIQ[l].name}</b></button>`).join("")}</div>`
+    :`<div style="text-align:center;margin-top:8px"><button class="startBtn" style="font-size:1em;padding:9px 26px" onclick="dojoTitStart()">もう一度（同じ相手）</button></div>`}`;
+  drawCurve($id("dCurve"),{pHat:v=>solvePH(an,C0,v),Veq:J.Veq,vmax:Math.max(J.Veq*2,ti.v+1),vStop:ti.v,band:ind,ok:J.ok});
+  log(J.ok?`🎯 ${an.name}を ${ti.v.toFixed(2)} mL で中和した！`:`💧 ${why}`);
+}
+function dojoPredict(l){ const ti=DJ&&DJ.ti; if(!ti||ti.stage!=="judged")return; ti.stage="predicted";
+  const b=DJ.beakers[DJ.cur],salt=SALT_OF[b.sub],S=SALTS[salt],ans=saltLiq(salt),ok=l===ans;
+  if(ok)DJ.predOK++;
+  let joined="";
+  if(ok&&!DJ.practice){ const F=dojoFlags(); if(!F.salts[salt]){ F.salts[salt]=true;
+      const lv=Math.max(5,dojoMe().lv-2), m=makeMon("neuto",lv,salt);
+      if(state.party.length<6)state.party.push(m); else state.box.push(m); dexAdd("neuto");
+      joined=`<br>🎉 <b>${S.formula}</b> のニュート（${LIQ[ans].name}）が仲間になった！`; toast("🎉 塩のモンスター "+S.formula+" が仲間になった！"); sfx("catch"); saveState(); } }
+  const last=DJ.cur>=DJ.beakers.length-1;
+  $id("dCmd").insertAdjacentHTML("beforeend",`<div class="note" style="margin-top:8px">${ok?"⭕ 正解！":"❌ 残念！"} ${S.formula} は ${S.acid.split(" ")[0]}（${S.acidStrong?"強酸":"弱酸"}）と ${S.base.split(" ")[0]}（${S.baseStrong?"強塩基":"弱塩基"}）からできた塩 → 水溶液は <b>${LIQ[ans].name}</b>。${joined}</div>
+    <div style="text-align:center;margin-top:8px"><button class="startBtn" style="font-size:1em;padding:9px 26px" onclick="dojoTitNext()">${last?"結果を見る":"次の相手へ ▶"}</button></div>`);
+  document.querySelectorAll("#dCmd .toolRow button").forEach(x=>x.disabled=true);
+  log(`${ok?"⭕":"❌"} ${S.formula} の水溶液は${LIQ[ans].name}`);
+}
+function dojoTitNext(){ if(!DJ)return; if(DJ.cur>=DJ.beakers.length-1){dojoFinish(true);return;} DJ.cur++; dojoTitStart(); }
+
+/* ---------- 結果 ---------- */
+function dojoFinish(win){ if(!DJ)return; DJ.phase="result"; const st=DJ.st,n=DJ.beakers.length; let stars=0;
+  if(win){ const exact=DJ.beakers.every(b=>b.n0===0||beakerState(b).exact);
+    const two=st.mode==="identify"?DJ.tests<=1:(st.mode==="seq"?DJ.pours<=n:DJ.fails===0);
+    const three=two&&(st.mode==="titrate"?DJ.predOK===n:(DJ.flips===0&&exact));
+    stars=1+(two?1:0)+(three?1:0); }
+  const F=dojoFlags(); let reward="";
+  if(win){ const m=dojoMe(); let exp=30+DJ.no*25; if(stars===3)exp=Math.round(exp*1.5); if(DJ.practice)exp=Math.round(exp/2);
+    const gold=DJ.practice?0:20*DJ.no; state.gold+=gold; grantExp(m,exp);
+    reward=`${SPECIES[m.sp].name}は ${exp} 経験値をもらった！${gold?` ✦${gold}`:""}`;
+    if(!DJ.practice){ F.stars[DJ.no]=Math.max(F.stars[DJ.no]||0,stars); if(DJ.no===5&&!F.badge){F.badge=true;reward+="<br>🏅 道場バッジを手に入れた！";} }
+    sfx("win"); } else sfx("faint");
+  saveState(); refresh();
+  const crit=st.mode==="identify"?"★2: 調べるのは1回まで（BTB を使えば1回で全部わかる）":st.mode==="seq"?"★2: 1体につき1回の注入で中和":"★2: 一度も終点を外さない";
+  const crit3=st.mode==="titrate"?"★3: 塩の性質の予想もすべて正解":"★3: 入れすぎゼロ・全部ぴったり（誤差 0.5% 以内）";
+  $id("dCmd").innerHTML=`<div class="titHead">${win?"🏆 段"+DJ.no+" クリア！":"😵 相棒が力尽きた…"}</div>
+    ${win?`<div class="stars big">${"★".repeat(stars)}<span class="off">${"★".repeat(3-stars)}</span></div>`:""}
+    <div class="note">${win?reward:"計算してから注ぐと、少ないターンで中和できる。ログで計算の内訳を見直そう。"}
+      <br><span class="sub">ターン ${DJ.turns}　注入 ${DJ.pours}回　${st.mode==="identify"?"調べた "+DJ.tests+"回　":""}入れすぎ ${DJ.flips}回${DJ.practice?"　（練習なので星はつかない）":""}</span>
+      <br><span class="sub">${crit}<br>${crit3}</span></div>
+    <div class="resBtns"><button class="actBtn" onclick="startDojo(${DJ.no},${DJ.practice})">もう一度</button>
+      <button class="actBtn" onclick="endDojo();openDojoMenu()">道場の入口へ</button><button class="miniBtn" onclick="endDojo()">フィールドへ</button></div>`;
+  log(win?`🏆 段${DJ.no}クリア！ ★${stars}`:"😵 道場で力尽きた");
+}
+
+/* ===== エンディング ===== */
+function playEnding(admin){
+  let lines;
+  if(admin){
+    lines=[`<div class="edArt">${monSVG(state.party[0]?state.party[0].sp:'acidrake')}</div>`,
+     `<h2 style="color:var(--rose)">TRUE CLEAR ― 天下統一</h2>`,
+     `<div class="edLine">5人のトレーナーを退け、さらに最強の<b>第六天魔王 ノブナガン</b>をも打ち倒した。</div>`,
+     `<div class="edLine edDim">政治・外交・社会・文化・史料・思想――全時代を極めた者だけが到達できる頂。</div>`,
+     `<div class="edLine" style="color:var(--rose);margin-top:8px">あなたは天下を統一し、歴史の覇者となった。</div>`,
+     `<div class="edHead">― 倒したトレーナー ―</div>`,
+     ...TRAINERS.map(t=>`<div class="edLine edDim">🏅 ${t.name}</div>`),
+     `<div class="edLine edDim" style="color:var(--rose)">⚡ 第六天魔王 ノブナガン</div>`,
+     `<div class="edHead">― 冒険の記録 ―</div>`,
+     `<div class="edLine">図鑑登録 <b style="color:var(--cyan)">${state.dex.length}</b> / ${Object.keys(SPECIES).length}</div>`,
+     `<div class="edLine">通算成績 <b style="color:var(--amber)">${state.wins||0}勝 ${state.losses||0}敗</b></div>`,
+     `<div class="edLine">最強の相棒 <b style="color:var(--amber)">${state.party[0]?SPECIES[state.party[0].sp].name+" Lv"+state.party[0].lv:"―"}</b></div>`,
+     `<div class="edLine" style="margin:22px 0;font-size:18px;color:var(--rose)">★ CONGRATULATIONS ★</div>`];
+  } else {
+    lines=[`<div class="edArt">${monSVG(state.party[0]?state.party[0].sp:'acidrake')}</div>`,
+     `<h2>日本史マスターへの道 ― CLEAR</h2>`,
+     `<div class="edLine">あなたは政治・外交・社会・文化・史料・思想の試練を越え、</div>`,
+     `<div class="edLine">歴史王 ヒデヨシンを打ち倒した。</div>`,
+     `<div class="edLine edDim">時代が移り、人が動き、史料が真実を語る――</div>`,
+     `<div class="edLine edDim">日本史の全時代は、いまあなたのものだ。</div>`,
+     `<div class="edHead">― 獲得したバッジ ―</div>`,
+     ...TRAINERS.map(t=>`<div class="edLine edDim">${state.beaten.includes(t.id)?'🏅':'▫'} ${t.name}</div>`),
+     `<div class="edHead">― 冒険の記録 ―</div>`,
+     `<div class="edLine">図鑑登録 <b style="color:var(--cyan)">${state.dex.length}</b> / ${Object.keys(SPECIES).length}</div>`,
+     `<div class="edLine">最強の相棒 <b style="color:var(--amber)">${state.party[0]?SPECIES[state.party[0].sp].name+" Lv"+state.party[0].lv:"―"}</b></div>`,
+     `<div class="edLine" style="color:var(--rose);margin-top:10px">…だが、アリーナの奥に封印が解けた気配。<b>⚡の間</b>へ向かえ。</div>`,
+     `<div class="edLine" style="color:var(--cyan);margin-top:10px">あなたの編成は「歴史闘技場」に登録された。</div>`,
+     `<div class="edLine edDim">クラスメイトの挑戦を待とう！</div>`,
+     `<div class="edLine" style="margin:22px 0;font-size:18px;color:var(--amber)">★ THANK YOU FOR PLAYING ★</div>`];
+  }
+  $id("edScroll").innerHTML=lines.join("");const ed=$id("ending");ed.classList.add("show");
+  requestAnimationFrame(()=>ed.classList.add("run"));setTimeout(()=>{$id("edClose").style.display="block";},5000);
+  saveMyTeam();
+}
+function closeEnding(){const ed=$id("ending");ed.classList.remove("show","run");$id("edClose").style.display="none";
+  const ai=AREAS.findIndex(a=>a.kind==="arena");loadArea(ai);const s=startTile(ai);state.px=s.x;state.py=s.y;place("player",state.px,state.py);camera();refresh();
+  log('<span class="sys">▶ </span>自由に再戦・育成できる。回復は各エリアの✚で。');}
+
+/* ===== 道具屋 ===== */
+const SHOPITEMS=[{k:"ball",name:"捕獲ボール",price:30,desc:"野生モンスターを捕まえる"},
+  {k:"potion",name:"回復薬",price:40,desc:"HPを30回復"},{k:"bigpotion",name:"強回復薬",price:120,desc:"HPを全回復"}];
+function openShop(){$id("shop").classList.add("show");renderShop();}
+function closeShop(){$id("shop").classList.remove("show");}
+function renderShop(){$id("shopGold").textContent=state.gold;
+  $id("shopList").innerHTML=SHOPITEMS.map(it=>`<div class="row"><div class="info">${it.name}<div class="sub">${it.desc} ／ ✦${it.price}</div></div><button class="actBtn" onclick="buyItem('${it.k}',${it.price})">買う</button></div>`).join("");}
+function buyItem(k,price){if(state.gold<price){toast("✦ 足りない");return;}state.gold-=price;state.bag[k]=(state.bag[k]||0)+1;sfx("buy");refresh();renderShop();saveState();toast("🛍 "+SHOPITEMS.find(i=>i.k===k).name+"を購入");}
+
+/* ===== 編成登録（いつでも更新可） ===== */
+function openRegister(){$id("register").classList.add("show");renderRegister();}
+function closeRegister(){$id("register").classList.remove("show");}
+function renderRegister(){
+  const entry=myTeamEntry();
+  let h=`<div class="note" style="margin-bottom:10px;">いまの手持ちを「<b style="color:var(--cyan)">${escapeHtml(entry.name)}</b>」の名前で対戦アリーナに登録します。トレーナーを倒していなくても、いつでも登録・更新できます。登録すると、同じ${cloudOn()?"クラス":"端末"}の他のトレーナーの挑戦相手になります。</div>`;
+  h+='<div class="sub" style="margin-bottom:6px;">登録される編成</div>';
+  if(!state.party.length)h+='<div class="empty">手持ちがいません</div>';
+  state.party.forEach(m=>{const sp=SPECIES[m.sp];h+=`<div class="monrow"><div class="monart">${monSVG(m.sp)}</div><div class="moninfo"><div class="monname">${sp.name} ${typeBadge(sp.type)}</div><div class="monsub">Lv${m.lv}${m.salt?" ／ "+saltLabel(m.salt,true):""}</div></div></div>`;});
+  h+=`<div style="text-align:center;margin-top:10px;"><button class="startBtn" style="font-size:14px;padding:11px 28px;" onclick="doRegister()">この編成を登録する</button></div>`;
+  h+=`<div class="sub" style="text-align:center;margin-top:8px;">現在の戦績：${state.wins||0}勝 ${state.losses||0}敗　${cloudOn()?'☁ クラウド同期ON':'📴 この端末のみ（Firebase未設定）'}</div>`;
+  $id("registerBody").innerHTML=h;
+}
+function doRegister(){ if(!state.party.length){toast("手持ちがいません");return;} saveMyTeam(false); renderRegister(); }
+
+/* ===== 自由対戦（登録プレイヤーから相手を選ぶ） ===== */
+function openVersus(){$id("versus").classList.add("show");$id("versusBody").innerHTML='<div class="empty">読み込み中…</div>';
+  // クラウドがあれば最新取得→少し待って描画
+  loadOpponents();
+  setTimeout(()=>renderVersus(), cloudOn()?500:0);
+  if(!cloudOn())renderVersus();
+}
+function closeVersus(){$id("versus").classList.remove("show");}
+function renderVersus(){
+  const opp=loadOpponents();
+  // 自分を除外し、勝利数順
+  const mine="P_"+(state.name||"trainer");
+  let list=opp.players.filter(p=>p.id!==mine && p.name!==state.name);
+  list.sort((a,b)=>((b.wins||0)-(a.wins||0))||((a.losses||0)-(b.losses||0)));
+  let h=`<div class="note" style="margin-bottom:10px;">登録されているトレーナーに挑戦できます（勝利数順）。${cloudOn()?'クラス全体':'この端末'}の編成から選べます。</div>`;
+  if(!list.length){h+='<div class="empty">まだ他のトレーナーが登録されていません。<br>📋編成登録台で自分の編成を登録すると、他の人の挑戦相手になります。</div>';}
+  list.forEach((p,i)=>{
+    const team=(p.team||[]).map(m=>`<span class="vteam" title="${SPECIES[m.sp]?SPECIES[m.sp].name:''} Lv${m.lv}">${SPECIES[m.sp]?monSVG(m.sp):''}<span class="vlv">${m.lv}</span></span>`).join("");
+    h+=`<div class="vrow"><div class="vhead"><span class="vname" style="color:${safeColor(p.color)}">${escapeHtml(p.name)}</span>
+      <span class="vrec">${p.wins||0}勝 ${p.losses||0}敗 ・ 🏅${p.badges||0}</span></div>
+      <div class="vteams">${team||'<span class="sub">編成なし</span>'}</div>
+      <button class="actBtn vbtn" onclick="challengePlayer(${i})">挑戦</button></div>`;
+  });
+  window.__versusList=list;
+  $id("versusBody").innerHTML=h;
+}
+function challengePlayer(i){
+  const p=(window.__versusList||[])[i]; if(!p||!p.team||!p.team.length){toast("編成が空です");return;}
+  if(!firstAlive(state.party)){toast("戦えるモンスターがいない！回復所(✚)へ");return;}
+  closeVersus();
+  // プレイヤー編成を相手トレーナーとして戦う（バッジ対象外・勝敗は記録）
+  const foe={id:p.id||("P_"+p.name), name:safeName(p.name), color:safeColor(p.color), player:true,
+    team:sanitizeTeam(p.team), intro:(p.name+"の編成に挑戦！"), lose:"（"+p.name+"の編成を倒した！）"};
+  startDialogue(p.name,foe.color,[p.name+"の編成に挑戦する！"],()=>beginTrainerBattle(foe));
+}
+
+/* ===== ランキング（誰でもいつでも閲覧） ===== */
+function openRanking(){$id("ranking").classList.add("show");$id("rankingBody").innerHTML='<div class="empty">読み込み中…</div>';
+  loadRanking(list=>{renderRanking(list);}); }
+function closeRanking(){$id("ranking").classList.remove("show");}
+function renderRanking(list){
+  if(!list||!list.length){$id("rankingBody").innerHTML='<div class="empty">まだ記録がありません</div>';return;}
+  let h='<div class="sub" style="margin-bottom:8px;">勝利数ランキング（プレイヤー編成＋CPUトレーナー）</div>';
+  list.slice(0,30).forEach((e,i)=>{const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
+    const me=(e.name===state.name&&e.player);
+    h+=`<div class="rankRow ${me?'me':''}"><span class="rankNo">${medal}</span>
+      <span class="rankName" style="color:${safeColor(e.color)}">${escapeHtml(e.name)}${e.cpu?' <span class="sub">(CPU)</span>':''}${me?' <span class="sub">(あなた)</span>':''}</span>
+      <span class="rankRec"><b>${e.wins||0}</b>勝 ${e.losses||0}敗</span></div>`;});
+  h+=`<div class="sub" style="text-align:center;margin-top:8px;">${cloudOn()?'☁ クラス全体の集計':'📴 この端末の記録（Firebase未設定）'}</div>`;
+  $id("rankingBody").innerHTML=h;
+}
+
+/* ===== パーティ/メニュー ===== */
+function openMenu(){if(dlg||B||DJ||$id("titlescreen").style.display!=="none")return;$id("menu").classList.add("show");switchTab("team");}
+function closeMenu(){$id("menu").classList.remove("show");}
+function switchTab(n){document.querySelectorAll("#menu .tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===n));
+  document.querySelectorAll("#menu .mpanel").forEach(p=>p.classList.remove("show"));$id("mpanel-"+n).classList.add("show");renderTab(n);}
+function renderTab(n){
+  if(n==="team"){
+    let h="";state.party.forEach((m,i)=>{const sp=SPECIES[m.sp];h+=`<div class="monrow">
+      <div class="monart">${monSVG(m.sp)}</div>
+      <div class="moninfo"><div class="monname">${sp.name} ${typeBadge(sp.type)}</div>
+        <div class="monsub">Lv${m.lv}${m.salt?" ／ "+saltLabel(m.salt,true):""} ／ HP ${m.hp}/${m.maxhp} ／ 技: ${m.moves.map(k=>MOVES[k].name).join("・")}</div>
+        <div class="xpbar"><span style="width:${m.exp/expToNext(m.lv)*100}%"></span></div></div>
+      <div class="monbtns">${i>0?`<button class="miniBtn" onclick="partyUp(${i})" title="順番を上げる">▲</button>`:""}<button class="miniBtn" onclick="partyToBox(${i})" ${state.party.length<=1?'disabled':''} title="ボックスへ預ける">預ける ▼</button></div></div>`;});
+    h+=`<div class="sub" style="margin:8px 0 5px;">ボックス（控え・${state.box.length}体）${state.party.length>=6?' ／ 手持ちが満員です。入れ替えるには手持ちを1体「預ける」':''}</div>`;
+    if(state.box.length){
+      state.box.forEach((m,i)=>{const sp=SPECIES[m.sp];h+=`<div class="monrow box"><div class="monart">${monSVG(m.sp)}</div>
+        <div class="moninfo"><div class="monname">${sp.name} ${typeBadge(sp.type)}</div><div class="monsub">Lv${m.lv}${m.salt?" ／ "+saltLabel(m.salt,true):""} ／ HP ${m.hp}/${m.maxhp}</div></div>
+        <div class="monbtns"><button class="miniBtn" onclick="boxToParty(${i})" ${state.party.length>=6?'disabled':''} title="${state.party.length>=6?'手持ちが満員':'手持ちに入れる'}">◀ 手持ちへ</button></div></div>`;});
+    } else { h+='<div class="empty" style="padding:8px;">ボックスは空です。捕まえたモンスターや、手持ちから預けた子がここに入ります。</div>'; }
+    $id("mpanel-team").innerHTML=h||'<div class="empty">手持ちがいない</div>';
+  }
+  else if(n==="bag"){
+    $id("mpanel-bag").innerHTML=`<div class="statLine">🔮 捕獲ボール <b>${state.bag.ball}</b><br>🧪 回復薬 <b>${state.bag.potion}</b><br>🧪 強回復薬 <b>${state.bag.bigpotion}</b><br>✦ ゴールド <b>${state.gold}</b></div>`;
+  }
+  else if(n==="dex"){
+    let h='<div class="dexGrid">';Object.keys(SPECIES).forEach(k=>{const seen=state.dex.includes(k);const sp=SPECIES[k];
+      h+=`<div class="dexCard ${seen?'':'unknown'}">${monSVG(k)}<br>${seen?sp.name:"？？？"}<br><span class="sub">${seen?TYPES[sp.type].name+(sp.type==="neutral"?"<br>液性は個体しだい":""):""}</span></div>`;});h+="</div>";
+    $id("mpanel-dex").innerHTML=h;
+  }
+  else if(n==="type"){
+    // 相性表
+    const tks=Object.keys(TYPES).filter(k=>k!=="normal");
+    let h='<div class="sub" style="margin-bottom:6px;">攻撃(縦) → 防御(横)。◎抜群 ×いまひとつ</div><div class="chartWrap"><table class="chart"><tr><th></th>';
+    tks.forEach(d=>h+=`<th style="color:${TYPES[d].color}">${TYPES[d].name}</th>`);h+="</tr>";
+    tks.forEach(a=>{h+=`<tr><th style="color:${TYPES[a].color};text-align:right">${TYPES[a].name}</th>`;
+      tks.forEach(d=>{const m=typeMul(a,d);const s=m>=2?'<span class="good">◎</span>':(m<=0.5?'<span class="bad">×</span>':'・');h+=`<td>${s}</td>`;});h+="</tr>";});
+    h+="</table></div>";
+    h+='<div class="note" style="margin-top:10px;">酸⇔塩基は互いに抜群（中和の主役）。<b>塩</b>は個体ごとに液性がちがう：酸性の塩（例 NH₄Cl）は「酸」、塩基性の塩（例 CH₃COONa）は「塩基」として相性が決まり、中性の塩（例 NaCl）は酸・塩基に等倍。中和してできた塩が中性とは限らない！ 指示薬は滴定・イオンを見抜く。滴定は中和・イオンに強い。相手の属性に合う技で「効果抜群」を狙おう。</div>';
+    $id("mpanel-type").innerHTML=h;
+  }
+  else if(n==="note"){
+    $id("mpanel-note").innerHTML=NOTES.map(nt=>`<div class="noteItem"><h4>${nt.t}</h4>${nt.b}</div>`).join("");
+  }
+}
+function partyUp(i){const t=state.party[i];state.party.splice(i,1);state.party.splice(i-1,0,t);renderTab("team");saveState();}
+function partyToBox(i){ if(state.party.length<=1){toast("最後の1体は預けられません");return;}
+  const m=state.party.splice(i,1)[0]; state.box.push(m); renderTab("team"); refresh(); saveState(); toast("📦 "+SPECIES[m.sp].name+" をボックスへ預けた"); }
+function boxToParty(i){ if(state.party.length>=6){toast("手持ちが満員です。先に手持ちを1体「預ける」");return;}
+  const m=state.box.splice(i,1)[0]; state.party.push(m); renderTab("team"); refresh(); saveState(); toast("🎒 "+SPECIES[m.sp].name+" を手持ちに入れた"); }
+
+/* 歴史ノート（分野別の要点） */
+const NOTES=[
+ {t:"政治の流れ",b:"飛鳥：十七条の憲法・大化の改新（645）。奈良：平城京（710）・律令制（班田収授・租庸調）。平安：摂関政治→院政。鎌倉：執権政治・承久の乱（1221）・御成敗式目（1232）。室町：応仁の乱（1467）→戦国。江戸：幕藩体制・三大改革（享保・寛政・天保）。明治：版籍奉還→廃藩置県で中央集権。"},
+ {t:"外交の流れ",b:"遣隋使・遣唐使で大陸文化を摂取→894停止。元寇（1274・1281）を北条時宗が撃退。室町：勘合貿易。戦国：鉄砲（1543）・南蛮貿易。江戸：鎖国、長崎出島でオランダ・清とのみ。幕末：ペリー来航（1853）→不平等条約（領事裁判権・関税自主権なし）。明治以降：条約改正（陸奥＝領事裁判権撤廃1894、小村＝関税自主権回復1911）。"},
+ {t:"社会・経済",b:"律令：公地公民→墾田永年私財法（743）で荘園発生。中世：座・土一揆。近世：太閤検地・刀狩で兵農分離。江戸：年貢中心・株仲間・打ちこわし。明治：地租改正（地価に現金定率）・殖産興業・産業革命。戦後：農地改革で地主制解体。"},
+ {t:"文化の流れ",b:"飛鳥→天平（唐＋仏教）→国風（かな・源氏物語）→鎌倉（運慶・快慶）→北山（金閣）→東山（銀閣・書院造）→桃山（城・狩野永徳）→元禄（上方町人）→化政（江戸町人・浮世絵）→蘭学・国学（本居宣長）→文明開化。"},
+ {t:"宗教・思想",b:"仏教伝来（百済）。平安：最澄（天台）・空海（真言）。鎌倉新仏教：法然（浄土）・親鸞（浄土真宗）・日蓮・栄西・道元（禅）。戦国：キリスト教（ザビエル1549）。江戸：朱子学を幕府が奨励・寺請制度。幕末：尊王攘夷（国学・水戸学）。明治：廃仏毀釈。"},
+ {t:"史料の読み方",b:"キーワードで時代を判定：『租庸調・口分田』→奈良律令、『御恩・奉公』→鎌倉封建、『鎖国・出島』→江戸、『殖産興業・文明開化』→明治。『なぜそうなったか（因果）』『どんな前提で成り立つか』を問うのが入試の定番。年代整序は流れでつかむ。"},
+];
+
+/* ===== 入力 ===== */
+const keyMap={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
+document.addEventListener("keydown",e=>{if($id("titlescreen").style.display!=="none")return;
+  if(e.key==="m"||e.key==="M"){e.preventDefault();$id("menu").classList.contains("show")?closeMenu():openMenu();return;}
+  if(e.key==="Escape"){closeMenu();closeShop();closeRegister();closeRanking();closeVersus();closeDojoMenu();return;}
+  if(e.key===" "||e.key==="Enter"){e.preventDefault();if(dlg)advanceDialogue();return;}
+  if(keyMap[e.key]){e.preventDefault();const now=performance.now();if(e.repeat&&now-lastKeyMove<150)return;lastKeyMove=now;stopWalk();tryMove(...keyMap[e.key]);}});
+let lastKeyMove=0;
+$id("dialogue").addEventListener("click",advanceDialogue);
+$id("openMenu").onclick=openMenu;$id("closeMenu").onclick=closeMenu;$id("closeShop").onclick=closeShop;$id("bgmBtn").onclick=toggleBgm;$id("edClose").onclick=closeEnding;
+$id("closeRegister").onclick=closeRegister;$id("closeDojo").onclick=closeDojoMenu;$id("closeRanking").onclick=closeRanking;$id("closeVersus").onclick=closeVersus;
+document.querySelectorAll("#menu .tab").forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+/* 十字キー: 押した瞬間に1歩、押し続けると連続移動 */
+const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+let holdT=null,holdBtn=null;
+function stopHold(){clearInterval(holdT);holdT=null;if(holdBtn)holdBtn.classList.remove("on");holdBtn=null;}
+document.querySelectorAll(".dpad button[data-d]").forEach(b=>{const d=DIRS[b.dataset.d];
+  b.addEventListener("pointerdown",e=>{e.preventDefault();stopWalk();stopHold();
+    if(dlg){advanceDialogue();return;}
+    holdBtn=b;b.classList.add("on");tryMove(...d);holdT=setInterval(()=>tryMove(...d),165);
+    try{b.setPointerCapture(e.pointerId);}catch(_){} });
+  ["pointerup","pointercancel","lostpointercapture"].forEach(ev=>b.addEventListener(ev,stopHold));
+  b.addEventListener("contextmenu",e=>e.preventDefault());
+});
+/* マップをタップ: その場所まで1マスずつ歩く（壁で止まる。施設やトレーナーのマスなら話しかける） */
+let walkT=null;
+function stopWalk(){clearInterval(walkT);walkT=null;}
+/* 幅優先探索で最短経路を求める。施設・出入口などの特殊マスは目的地のときだけ通る（そこへ踏み込むと調べる） */
+function findPath(tx,ty){
+  const special=(x,y)=>{const t=MAP[y][x];if("HS<>ARKVZD".includes(t))return true;
+    const rec=POS[state.area];return !!(rec.versus&&rec.versus.y===y&&(rec.versus.x===x||rec.versus.x+1===x));};
+  const free=(x,y)=>walkable(x,y)&&!special(x,y);
+  const key=(x,y)=>y*COLS+x, prev=new Map([[key(state.px,state.py),null]]), q=[[state.px,state.py]];
+  while(q.length){const [x,y]=q.shift();
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,k=key(nx,ny);
+      if(nx<0||ny<0||nx>=COLS||ny>=ROWS||prev.has(k))continue;
+      const goal=nx===tx&&ny===ty;
+      if(!goal&&!free(nx,ny))continue;
+      prev.set(k,[x,y]);
+      if(goal){const path=[];let c=[nx,ny];while(c&&!(c[0]===state.px&&c[1]===state.py)){path.unshift(c);c=prev.get(key(c[0],c[1]));}return path;}
+      q.push([nx,ny]);}}
+  return null;}
+function walkTo(tx,ty){stopWalk();stopHold();
+  const path=findPath(tx,ty); if(!path||!path.length)return;
+  const step=()=>{ if(dlg||uiOpen()||!path.length){stopWalk();return;}
+    const [nx,ny]=path.shift(),ox=state.px,oy=state.py,oa=state.area;
+    tryMove(nx-ox,ny-oy);
+    if(state.area!==oa||(state.px===ox&&state.py===oy))stopWalk(); };
+  walkT=setInterval(step,165); step(); }
+$id("viewport").addEventListener("pointerup",e=>{
+  if(e.target.closest("#dialogue")||dlg||uiOpen()||!MAP)return;
+  const r=$id("viewport").getBoundingClientRect();
+  const tx=Math.floor((e.clientX-r.left+CAM.x)/(TILE*ZOOM)),ty=Math.floor((e.clientY-r.top+CAM.y)/(TILE*ZOOM));
+  if(tx<0||ty<0||tx>=COLS||ty>=ROWS)return;
+  ensureAudio(); walkTo(tx,ty); });
+
+/* ===== トースト ===== */
+let tT;function toast(html){const t=$id("toast");t.innerHTML=html;t.classList.add("show");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("show"),2800);}
+
+/* ===== スターター選択・起動 ===== */
+const STARTERS=["acidling","baseling","neuto"];
+function showStarters(){
+  const box=$id("starterChoices");box.innerHTML="";
+  STARTERS.forEach(k=>{const sp=SPECIES[k];const d=document.createElement("button");d.className="starterCard";
+    d.style.setProperty("--tc",TYPES[sp.type].color);d.innerHTML=`<div class="scart">${monSVG(k)}</div><div class="scname">${sp.name}</div><div class="sctype">${typeBadge(sp.type)}</div>`;
+    d.onclick=()=>pickStarter(k);box.appendChild(d);});
+}
+function pickStarter(k){
+  state.party=[makeMon(k,5,"NaCl")];dexAdd(k);state.started=true;
+  $id("starterModal").classList.remove("show");
+  startGame();
+  startDialogue("先生の助手 ミオ","#4fd8c8",[
+    "いい相棒を選んだね！ ここは日本史のモンスターが暮らす世界。",
+    "草むら(緑)を歩くと野生モンスターに出会える。技を選ぶと日本史の問題が出て、正解で攻撃できるよ。",
+    "相手の分野に強い技だと『効果抜群』。連続正解でコンボも乗る。弱らせて🔮ボールで仲間にもできる。",
+    "分野は 政治・外交・社会経済・文化・史料・宗教思想 の6つ。相手の分野をよく見て技を選ぼう！",
+    "弱らせてから🔮ボールを使うと仲間にできるよ。HPが低いほど捕まえやすい。",
+    "右の▶から次のエリアへ、✚マスで回復。🥋の『年代整序道場』で出来事を時系列に並べる修行もできる。",
+    "アリーナでは四天王（入試級の問題を出す強敵）に挑戦。最後は歴史王ヒデヨシン、その先には隠しボスが待つ。勝てば編成が歴史闘技場に登録され、クラスの誰かの挑戦相手になる。いってらっしゃい！"
+  ]);
+}
+function startGame(){
+  $id("titlescreen").style.display="none";ensureAudio();
+  loadArea(state.area||0);const s=startTile(state.area||0);
+  if(!state.px&&!state.py){state.px=s.x;state.py=s.y;}
+  place("player",state.px,state.py);camera();refresh();drawMinimap();playMusic("field");saveState();
+}
+function applySave(sv){
+  state=freshState(safeName(sv.name));Object.assign(state,sv);state.name=safeName(sv.name);
+  state.bag=state.bag||{ball:5,potion:3,bigpotion:0};
+  ["ball","potion","bigpotion"].forEach(k=>state.bag[k]=safeInt(state.bag[k],0,999,0));
+  state.party=(Array.isArray(state.party)?state.party:[]).map(sanitizeMon).filter(Boolean).slice(0,6);
+  state.box=(Array.isArray(state.box)?state.box:[]).map(sanitizeMon).filter(Boolean);
+  state.dex=(Array.isArray(state.dex)?state.dex:[]).filter(k=>Object.prototype.hasOwnProperty.call(SPECIES,k));
+  state.gold=safeInt(state.gold,0,1e7,0); state.area=safeInt(state.area,0,3,0);
+  state.flags=(state.flags&&typeof state.flags==="object")?state.flags:{};
+  const tids=[...TRAINERS.map(t=>t.id),ADMIN_TRAINER.id];
+  state.badges=(Array.isArray(state.badges)?state.badges:[]).filter(k=>tids.includes(k));
+  state.beaten=(Array.isArray(state.beaten)?state.beaten:[]).filter(k=>tids.includes(k));
+  state.wins=safeInt(state.wins,0,1e6,0);state.losses=safeInt(state.losses,0,1e6,0);
+}
+function newGame(){ const nm=($id("nameInput").value||"").trim().slice(0,8);
+  if(!nm){toast("トレーナー名を入力してください");return;}
+  // 同名セーブがあれば「続きから」。トレーナー名でセーブ管理
+  const local=loadSaveByName(nm);
+  const begin=(cloudSv)=>{
+    const sv=cloudSv||local;
+    if(sv&&sv.party&&sv.party.length){ applySave(sv); toast("『"+escapeHtml(nm)+"』の続きから再開します"); startGame(); }
+    else { state=freshState(nm); $id("starterModal").classList.add("show"); showStarters(); }
+  };
+  if(cloudOn()){ fetchCloudSave(nm,begin); } else { begin(null); }
+}
+function continueGame(){
+  // 最後に遊んだトレーナー名から復帰（クラウド優先）
+  let lastName=""; try{lastName=localStorage.getItem(CURNAME_KEY)||"";}catch(e){}
+  const local=lastName?loadSaveByName(lastName):loadSave();
+  const begin=(cloudSv)=>{ const sv=cloudSv||local; if(!sv){toast("セーブデータがありません");return;} applySave(sv); startGame(); };
+  if(cloudOn()&&lastName){ fetchCloudSave(lastName,begin); } else { begin(null); }
+}
+function resetGame(){ if(confirm("この端末のセーブを消して最初からにしますか？")){try{localStorage.removeItem(SAVE_KEY);if(state&&state.name)localStorage.removeItem("jhmon_save_"+state.name);localStorage.removeItem(CURNAME_KEY);}catch(e){}location.reload();} }
+
+function init(){
+  initFirebase(); // FIREBASE_CONFIG があればクラウド有効化
+  buildAreas();resolvePositions();state=freshState("");
+  $id("logoSlot").innerHTML=monSVG("acidrake");$id("titleArt").innerHTML=`<div style="display:flex;gap:6px;justify-content:center">${monSVG("acidrake")}${monSVG("baselith")}${monSVG("phenox")}</div>`;
+  $id("newBtn").onclick=newGame;$id("contBtn").onclick=continueGame;$id("resetBtn").onclick=resetGame;
+  // 直近のトレーナー名を名前欄に補完
+  try{const ln=localStorage.getItem(CURNAME_KEY);if(ln)$id("nameInput").value=ln;}catch(e){}
+  if(loadSave()){$id("contBtn").style.display="inline-block";}
+}
+init();
+
+</script>
+
+
+</body></html>
